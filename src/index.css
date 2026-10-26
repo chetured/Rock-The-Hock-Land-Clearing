@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream text-charcoal font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading uppercase tracking-tight;
+    line-height: 1.1;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-orange px-6 py-3 text-base font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-white/80 px-6 py-3 text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-forest;
+  }
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-forest px-6 py-3 text-base font-bold uppercase tracking-wide text-forest transition-colors hover:bg-forest hover:text-white;
+  }
+  .section-pad {
+    @apply px-4 py-16 sm:px-6 sm:py-20 lg:px-8;
+  }
+  .eyebrow {
+    @apply mb-3 inline-block text-sm font-bold uppercase tracking-[0.18em] text-orange;
+  }
+  .container-tight {
+    @apply mx-auto max-w-6xl;
+  }
+}
+
+/* Hide scrollbar for the before/after slider but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Print: show only the rental quote summary for a clean PDF save */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #rental-quote-summary,
+  #rental-quote-summary * {
+    visibility: visible;
+  }
+  #rental-quote-summary {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: 2px solid #1f3a2b;
+    padding: 24px;
+  }
+}
