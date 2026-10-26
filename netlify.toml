@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Send the bare domain to www so there is one canonical address.
+[[redirects]]
+  from = "https://rthllc.com/*"
+  to = "https://www.rthllc.com/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
