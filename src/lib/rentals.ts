@@ -120,6 +120,17 @@ export const RENTAL_ITEMS: RentalItem[] = [
   },
 ];
 
+// The Cat bucket always ships with the 289D3 (and the mulching package) at no charge.
+export const BUCKET = {
+  name: 'Cat smooth bucket',
+  image: 'cat-bucket.webp',
+  blurb: 'Always included with the Cat 289D3 and the mulching package. No charge, nothing to add.',
+};
+
+export function quoteIncludesBucket(quote: { items: { itemId: string }[] }): boolean {
+  return quote.items.some((q) => RENTAL_ITEMS.find((i) => i.id === q.itemId)?.includesBucket);
+}
+
 // Policy constants — shown in the quote summary and the "questions to ask" list.
 export const DAMAGE_WAIVER_PCT = 0.1;
 export const SALES_TAX_PCT = 0.0725;
@@ -316,6 +327,10 @@ export function buildPlainTextQuote(params: {
   for (const item of quote.items) {
     lines.push(`  ${item.name}`);
     lines.push(`    ${formatBlocks(item.blocks)} — ${usd(item.cost)}`);
+  }
+  if (quoteIncludesBucket(quote)) {
+    lines.push(`  ${BUCKET.name}`);
+    lines.push(`    Included with the skid steer — ${usd(0)}`);
   }
   lines.push('');
   lines.push(`Rental subtotal:     ${usd(quote.subtotal)}`);

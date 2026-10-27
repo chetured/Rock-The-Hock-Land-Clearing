@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { Fragment, useMemo, useState, type FormEvent } from 'react';
 import {
   Truck,
   Wrench,
@@ -27,6 +27,8 @@ import {
   formatBlocks,
   usd,
   buildPlainTextQuote,
+  BUCKET,
+  quoteIncludesBucket,
   type QuoteResult,
 } from '@/lib/rentals';
 
@@ -285,8 +287,8 @@ export default function RentalBuilder() {
                 const inCart = cart.includes(item.id);
                 const needsMachine = item.requiresMachine && !hasMachine;
                 return (
+                  <Fragment key={item.id}>
                   <article
-                    key={item.id}
                     className={`flex flex-col overflow-hidden rounded-xl border-2 bg-white shadow-sm transition-all ${
                       inCart ? 'border-orange' : 'border-forest/10 hover:border-forest/30'
                     }`}
@@ -395,6 +397,47 @@ export default function RentalBuilder() {
                     </button>
                     </div>
                   </article>
+                  {item.id === 'mulcher-package' && (
+                    <article
+                      className={`flex flex-col overflow-hidden rounded-xl border-2 bg-white shadow-sm ${
+                        hasMachine ? 'border-forest' : 'border-forest/10'
+                      }`}
+                    >
+                      <div className="aspect-[4/3] w-full bg-white">
+                        <img
+                          src={`${PHOTO_BASE}${BUCKET.image}`}
+                          alt={BUCKET.name}
+                          loading="lazy"
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                      <div className="flex flex-1 flex-col p-5">
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="ml-auto rounded-full bg-forest/8 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-forest">
+                            Included
+                          </span>
+                        </div>
+                        <h4 className="mt-3 text-base normal-case">{BUCKET.name}</h4>
+                        <span className="mt-2 inline-block self-start rounded bg-orange/12 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-orange-dark">
+                          Always included with the skid steer
+                        </span>
+                        <p className="mt-1 flex-1 text-sm text-charcoal/70">{BUCKET.blurb}</p>
+                        <div className="mt-3 text-center text-xs">
+                          <div className="font-bold text-charcoal">{usd(0)}</div>
+                          <div className="text-charcoal/50">every rental</div>
+                        </div>
+                        <div
+                          className={`mt-4 inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-sm font-bold uppercase tracking-wide ${
+                            hasMachine ? 'bg-forest text-white' : 'border-2 border-forest/20 text-forest/60'
+                          }`}
+                        >
+                          <Check className="h-4 w-4" />
+                          {hasMachine ? 'Included in your quote' : 'Comes with the Cat 289D3'}
+                        </div>
+                      </div>
+                    </article>
+                  )}
+                  </Fragment>
                 );
               })}
             </div>
@@ -565,6 +608,15 @@ export default function RentalBuilder() {
                       </div>
                     </div>
                   ))}
+                  {quoteIncludesBucket(quote) && (
+                    <div className="flex items-start justify-between gap-2 border-b border-charcoal/10 pb-2">
+                      <div className="text-sm">
+                        <div className="font-semibold">{BUCKET.name}</div>
+                        <div className="text-xs text-charcoal/60">Included with the skid steer</div>
+                      </div>
+                      <span className="mr-6 text-sm font-bold">{usd(0)}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-4 space-y-1.5 text-sm">
