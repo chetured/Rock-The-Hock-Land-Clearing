@@ -35,7 +35,7 @@ export const PHOTO_BASE =
   'https://afwiyqhgtptuzsxwoysn.supabase.co/storage/v1/object/public/quote-photos/site/';
 
 // Google Analytics measurement ID. Replace with your real ID (e.g. G-XXXXXXX).
-export const GA_MEASUREMENT_ID = 'GA_MEASUREMENT_ID';
+export const GA_MEASUREMENT_ID = 'G-R3CFMSQF04';
 
 export const SERVICES = [
   {
