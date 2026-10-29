@@ -1,6 +1,6 @@
 import { GA_MEASUREMENT_ID } from './constants';
 
-const hasRealId = () => GA_MEASUREMENT_ID !== 'GA_MEASUREMENT_ID';
+const hasRealId = () => GA_MEASUREMENT_ID.startsWith('G-');
 
 // Loads the GA4 tag once a real measurement id is set in constants.ts.
 // Until then it does nothing, so dev/preview never breaks.
