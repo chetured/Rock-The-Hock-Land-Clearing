@@ -131,7 +131,7 @@ export const RENTAL_ITEMS: RentalItem[] = [
   },
   {
     id: 'golf-cart',
-    name: 'Golf cart',
+    name: 'Yamaha Drive2 electric golf cart',
     category: 'Recreation',
     blurb: 'For weddings, events, campgrounds, farms and big properties. Delivered and picked up, or tow it yourself.',
     rate4hr: null,
@@ -142,6 +142,10 @@ export const RENTAL_ITEMS: RentalItem[] = [
     dayRateOnly: true,
     recreational: true,
     deposit: 250,
+    image: 'rental-golf-cart',
+    imageExt: 'png',
+    imageContain: true,
+    specs: ['Electric', 'Rear flip seat'],
     notes: 'Private property and event grounds only. Not street legal. Driver 21+ with a valid driver\u2019s license.',
   },
   {
