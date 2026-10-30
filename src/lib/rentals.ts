@@ -1,7 +1,7 @@
 // Equipment rental data and pricing engine — single source of truth for the
 // rental quote builder. Edit prices and policy constants here.
 
-export type RentalCategory = 'Machine' | 'Attachment' | 'Package';
+export type RentalCategory = 'Machine' | 'Attachment' | 'Package' | 'Recreation';
 
 export type RentalItem = {
   id: string;
@@ -20,6 +20,17 @@ export type RentalItem = {
   badge?: string;
   specs?: string[];
   includesBucket?: boolean;
+  // Priced by the day only: the card hides the 4hr/week/4wk columns.
+  dayRateOnly?: boolean;
+  // Golf carts and side-by-sides: needs the release of liability, a licensed
+  // adult driver, and the damage waiver (it can't be declined).
+  recreational?: boolean;
+  // Leaves our property, so the renter must show proof of insurance.
+  offsite?: boolean;
+  // Card hold for this item; the quote uses the largest one in the cart.
+  deposit?: number;
+  // Another item that can't be in the cart at the same time (onsite vs offsite).
+  excludes?: string;
 };
 
 export const RENTAL_ITEMS: RentalItem[] = [
@@ -118,6 +129,57 @@ export const RENTAL_ITEMS: RentalItem[] = [
     requiresMachine: true,
     image: 'rental-post-driver',
   },
+  {
+    id: 'golf-cart',
+    name: 'Golf cart',
+    category: 'Recreation',
+    blurb: 'For weddings, events, campgrounds, farms and big properties. Delivered and picked up, or tow it yourself.',
+    rate4hr: null,
+    rateDay: 250,
+    rateWeek: 250 * 7,
+    rate4Week: 250 * 28,
+    requiresMachine: false,
+    dayRateOnly: true,
+    recreational: true,
+    deposit: 250,
+    notes: 'Private property and event grounds only. Not street legal. Driver 21+ with a valid driver\u2019s license.',
+  },
+  {
+    id: 'segway-villain-onsite',
+    name: 'Segway Villain side-by-side: onsite riding',
+    category: 'Recreation',
+    blurb: 'Ride the Segway Villain sport side-by-side on our property near Logan. Helmets and eye protection provided.',
+    rate4hr: null,
+    rateDay: 500,
+    rateWeek: 500 * 7,
+    rate4Week: 500 * 28,
+    requiresMachine: false,
+    dayRateOnly: true,
+    recreational: true,
+    deposit: 1000,
+    excludes: 'segway-villain-offsite',
+    badge: 'Onsite riding',
+    notes: 'Driver 21+ with a valid driver\u2019s license. Every rider signs the release before riding. Short safety briefing first.',
+  },
+  {
+    id: 'segway-villain-offsite',
+    name: 'Segway Villain side-by-side: take it to your property',
+    category: 'Recreation',
+    blurb: 'Take the Segway Villain to your own land. We deliver it, or you tow it with a rated truck and trailer.',
+    rate4hr: null,
+    rateDay: 600,
+    rateWeek: 600 * 7,
+    rate4Week: 600 * 28,
+    requiresMachine: false,
+    dayRateOnly: true,
+    recreational: true,
+    offsite: true,
+    deposit: 1000,
+    excludes: 'segway-villain-onsite',
+    badge: 'Offsite',
+    notes:
+      'Private property only, never public roads. Proof of insurance required before pickup. Driver 21+ with a valid driver\u2019s license.',
+  },
 ];
 
 // The Cat bucket always ships with the 289D3 (and the mulching package) at no charge.
@@ -129,6 +191,22 @@ export const BUCKET = {
 
 export function quoteIncludesBucket(quote: { items: { itemId: string }[] }): boolean {
   return quote.items.some((q) => RENTAL_ITEMS.find((i) => i.id === q.itemId)?.includesBucket);
+}
+
+function cartItems(cart: string[]): RentalItem[] {
+  return cart.map((id) => RENTAL_ITEMS.find((i) => i.id === id)).filter((i): i is RentalItem => !!i);
+}
+
+export function cartHasRecreational(cart: string[]): boolean {
+  return cartItems(cart).some((i) => i.recreational);
+}
+
+export function cartHasOffsiteRecreational(cart: string[]): boolean {
+  return cartItems(cart).some((i) => i.recreational && i.offsite);
+}
+
+export function cartHasEquipment(cart: string[]): boolean {
+  return cartItems(cart).some((i) => !i.recreational);
 }
 
 // Policy constants — shown in the quote summary and the "questions to ask" list.
@@ -200,6 +278,9 @@ export function computeItemCost(
   }
 
   const d = Math.max(days, 1);
+  if (item.dayRateOnly) {
+    return [{ label: 'day', qty: d, cost: d * item.rateDay }];
+  }
   const blocks: { label: string; qty: number; cost: number }[] = [];
 
   let remaining = d;
@@ -272,7 +353,9 @@ export function computeQuote(params: {
     });
   }
 
-  const waiverAmount = waiver ? subtotal * DAMAGE_WAIVER_PCT : 0;
+  // Recreational vehicles always carry the damage waiver.
+  const waiverAmount = waiver || cartHasRecreational(cart) ? subtotal * DAMAGE_WAIVER_PCT : 0;
+  const deposit = Math.max(0, ...cartItems(cart).map((i) => i.deposit ?? DEPOSIT));
   const deliveryCost = delivery ? computeDelivery(miles) : 0;
   const tax = (subtotal + waiverAmount + deliveryCost) * SALES_TAX_PCT;
   const total = subtotal + waiverAmount + deliveryCost + tax;
@@ -284,7 +367,7 @@ export function computeQuote(params: {
     delivery: deliveryCost,
     tax,
     total,
-    deposit: DEPOSIT,
+    deposit,
   };
 }
 
@@ -341,6 +424,8 @@ export function buildPlainTextQuote(params: {
   lines.push(`Refundable deposit:  ${usd(quote.deposit)} (card hold, released on return)`);
   lines.push('');
   lines.push('Estimate. Fuel, extra engine hours and damage are billed at return. Quote valid 30 days.');
+  lines.push('Signed rental agreement required at pickup. Golf carts and side-by-sides also need a signed');
+  lines.push('release of liability from every driver and rider. Offsite rentals need proof of insurance.');
   lines.push(`Call (614) 379-2170 to confirm availability.`);
   return lines.join('\n');
 }
