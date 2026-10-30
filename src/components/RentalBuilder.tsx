@@ -260,14 +260,14 @@ export default function RentalBuilder() {
         <PartyPopper className="mx-auto h-12 w-12 text-orange" />
         <h3 className="mt-4 text-2xl sm:text-3xl">Got it.</h3>
         <p className="mx-auto mt-4 max-w-xl text-lg text-charcoal/80">
-          Shay will call to confirm availability, usually same day. Need it sooner? Call{' '}
+          We'll call to confirm availability, usually same day. Need it sooner? Call{' '}
           <a href={`tel:${BUSINESS.phoneRaw}`} className="font-bold text-forest underline underline-offset-2">
             {BUSINESS.phone}
           </a>
           .
         </p>
         <a href={`tel:${BUSINESS.phoneRaw}`} className="btn-primary mt-6">
-          <Phone className="h-5 w-5" /> Call Shay now
+          <Phone className="h-5 w-5" /> Call us now
         </a>
       </div>
     );
@@ -677,7 +677,7 @@ export default function RentalBuilder() {
         <div id="rental-reservation" className="mt-8 rounded-2xl border-2 border-forest/10 bg-white p-6 shadow-sm sm:p-8">
           <h3 className="text-xl normal-case">Reserve this rental</h3>
           <p className="mt-1 text-sm text-charcoal/70">
-            Fill this out and Shay will call to confirm availability. No payment now — the deposit is a card hold at pickup.
+            Fill this out and We'll call to confirm availability. No payment now — the deposit is a card hold at pickup.
           </p>
           {error && (
             <p className="mt-4 rounded-lg bg-orange/10 p-3 text-sm font-semibold text-orange-dark">{error}</p>
@@ -767,7 +767,7 @@ export default function RentalBuilder() {
                   className="form-input"
                   value={resForm.notes}
                   onChange={(e) => updateRes('notes', e.target.value)}
-                  placeholder="Anything Shay should know about the site or job"
+                  placeholder="Anything we should know about the site or job"
                 />
               </Field>
             </div>

@@ -268,7 +268,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
           <PartyPopper className="mx-auto h-12 w-12 text-orange" />
           <h2 className="mt-4 text-3xl sm:text-4xl">Got it.</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-charcoal/80">
-            Shay will call or text you within one business day to set up your free estimate. Need it
+            We'll call or text you within one business day to set up your free estimate. Need it
             sooner? Call{' '}
             <a
               href={`tel:${BUSINESS.phoneRaw}`}
@@ -279,7 +279,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
             .
           </p>
           <a href={`tel:${BUSINESS.phoneRaw}`} className="btn-primary mt-6">
-            <Phone className="h-5 w-5" /> Call Shay now
+            <Phone className="h-5 w-5" /> Call us now
           </a>
         </div>
       </section>
@@ -293,7 +293,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
           <span className="eyebrow">Free, no-obligation</span>
           <h2 className="text-3xl sm:text-4xl">Get your free quote</h2>
           <p className="mx-auto mt-3 max-w-xl text-charcoal/75">
-            Three quick steps. Shay calls or texts you back within one business day.
+            Three quick steps. We call or text you back within one business day.
           </p>
         </div>
 
