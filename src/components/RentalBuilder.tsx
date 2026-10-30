@@ -14,6 +14,7 @@ import {
   Copy,
   Printer,
   Trash2,
+  Car,
 } from 'lucide-react';
 import { BUSINESS, FORM_ENDPOINT, PHOTO_BASE } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
@@ -29,6 +30,8 @@ import {
   buildPlainTextQuote,
   BUCKET,
   quoteIncludesBucket,
+  cartHasRecreational,
+  cartHasEquipment,
   type QuoteResult,
 } from '@/lib/rentals';
 
@@ -36,6 +39,7 @@ const CATEGORY_ICON = {
   Machine: Truck,
   Attachment: Wrench,
   Package: Package,
+  Recreation: Car,
 } as const;
 
 type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -47,8 +51,12 @@ type ReservationForm = {
   company: string;
   address: string;
   hasInsurance: string;
+  insuranceCarrier: string;
   wantsOperator: boolean;
   notes: string;
+  agreeTerms: boolean;
+  agreeRelease: boolean;
+  confirmAgeLicense: boolean;
 };
 
 const initialRes: ReservationForm = {
@@ -58,8 +66,12 @@ const initialRes: ReservationForm = {
   company: '',
   address: '',
   hasInsurance: '',
+  insuranceCarrier: '',
   wantsOperator: false,
   notes: '',
+  agreeTerms: false,
+  agreeRelease: false,
+  confirmAgeLicense: false,
 };
 
 function isValidPhone(value: string): boolean {
@@ -101,6 +113,11 @@ export default function RentalBuilder() {
   );
 
   const hasMachine = cart.includes('cat-289d3') || cart.includes('mulcher-package');
+  const hasRecreational = cartHasRecreational(cart);
+  const hasEquipment = cartHasEquipment(cart);
+  // Proof of insurance is required for heavy equipment when the damage waiver
+  // is declined.
+  const needsInsurance = hasEquipment && !waiver;
 
   function toggleItem(id: string) {
     setCart((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
@@ -161,6 +178,14 @@ export default function RentalBuilder() {
       setError('Please enter the delivery address.');
       return;
     }
+    if (needsInsurance && (resForm.hasInsurance !== 'yes' || !resForm.insuranceCarrier.trim())) {
+      setError('This rental needs proof of insurance. Please choose Yes and enter your insurance company.');
+      return;
+    }
+    if (!resForm.confirmAgeLicense || !resForm.agreeTerms || (hasRecreational && !resForm.agreeRelease)) {
+      setError('Please check each box under Agreements to continue.');
+      return;
+    }
     setStatus('submitting');
     setError('');
 
@@ -170,6 +195,15 @@ export default function RentalBuilder() {
       breakdown: formatBlocks(i.blocks),
       cost: i.cost,
     }));
+
+    const agreements = [
+      'Renter is 21+ with a valid driver\u2019s license: confirmed',
+      'Rental agreement, damage waiver and insurance terms: agreed',
+      hasRecreational ? 'Release of liability (every driver and rider signs at pickup): agreed' : '',
+      resForm.insuranceCarrier ? `Insurance company: ${resForm.insuranceCarrier}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     let dbSaved = false;
     let emailSent = false;
@@ -186,13 +220,14 @@ export default function RentalBuilder() {
           address: resForm.address || null,
           has_insurance: resForm.hasInsurance === 'yes',
           wants_operator: resForm.wantsOperator,
-          notes: resForm.notes || null,
+          // The table has no agreement columns, so they ride along in notes.
+          notes: [resForm.notes, agreements].filter(Boolean).join('\n\n'),
           items: itemsJson,
           pickup_date: pickupDate || null,
           return_date: returnDate || null,
           half_day: sameDay && halfDay,
           delivery_miles: deliveryMode === 'deliver' ? miles : null,
-          damage_waiver: waiver,
+          damage_waiver: waiver || hasRecreational,
           subtotal: quote.subtotal,
           waiver_amount: quote.waiver,
           delivery_cost: quote.delivery,
@@ -221,6 +256,8 @@ export default function RentalBuilder() {
         delivery: deliveryMode === 'deliver' ? `Yes — ${town} (${miles} mi)` : 'Pickup in Logan',
         address: resForm.address,
         has_insurance: resForm.hasInsurance,
+        insurance_company: resForm.insuranceCarrier,
+        agreements,
         wants_operator: resForm.wantsOperator ? 'Yes' : 'No',
         notes: resForm.notes,
         pickup_date: pickupDate,
@@ -260,7 +297,9 @@ export default function RentalBuilder() {
         <PartyPopper className="mx-auto h-12 w-12 text-orange" />
         <h3 className="mt-4 text-2xl sm:text-3xl">Got it.</h3>
         <p className="mx-auto mt-4 max-w-xl text-lg text-charcoal/80">
-          Shay will call to confirm availability, usually same day. Need it sooner? Call{' '}
+          We&rsquo;ll call to confirm availability, usually same day.
+          {needsInsurance && ` Email your certificate of insurance to ${BUSINESS.email} before pickup.`} Bring your
+          driver&rsquo;s license to sign the agreement{hasRecreational && ' and release'}. Need it sooner? Call{' '}
           <a href={`tel:${BUSINESS.phoneRaw}`} className="font-bold text-forest underline underline-offset-2">
             {BUSINESS.phone}
           </a>
@@ -340,6 +379,12 @@ export default function RentalBuilder() {
                       </div>
                     )}
 
+                    {item.dayRateOnly ? (
+                      <div className="mt-3 text-center text-xs">
+                        <div className="text-lg font-bold text-charcoal">{usd(item.rateDay)}</div>
+                        <div className="text-charcoal/50">per day</div>
+                      </div>
+                    ) : (
                     <div className="mt-3 grid grid-cols-4 gap-1 text-center text-xs">
                       <div>
                         <div className="font-bold text-charcoal">{item.rate4hr ? usd(item.rate4hr) : '—'}</div>
@@ -358,6 +403,7 @@ export default function RentalBuilder() {
                         <div className="text-charcoal/50">4wk</div>
                       </div>
                     </div>
+                    )}
 
                     {item.notes && <p className="mt-3 text-xs text-charcoal/60">{item.notes}</p>}
 
@@ -562,7 +608,8 @@ export default function RentalBuilder() {
               <input
                 type="checkbox"
                 className="mt-0.5 h-5 w-5 shrink-0 accent-orange"
-                checked={waiver}
+                checked={waiver || hasRecreational}
+                disabled={hasRecreational}
                 onChange={(e) => setWaiver(e.target.checked)}
               />
               <span className="text-sm">
@@ -570,7 +617,11 @@ export default function RentalBuilder() {
                   <Shield className="h-4 w-4 text-forest" /> Damage waiver (10%)
                 </span>
                 <span className="mt-0.5 block text-charcoal/70">
-                  Covers accidental damage. Decline with proof of inland marine / equipment insurance.
+                  Covers accidental damage to the equipment. Decline with proof of inland marine / equipment insurance.{' '}
+                  {hasRecreational && 'Required on golf carts and the Segway Villain. '}
+                  <a href="#terms-damage-waiver" className="font-semibold text-forest underline underline-offset-2">
+                    What it covers
+                  </a>
                 </span>
               </span>
             </label>
@@ -635,6 +686,14 @@ export default function RentalBuilder() {
 
                 <p className="mt-3 text-xs text-charcoal/60">
                   Estimate. Fuel, extra engine hours and damage are billed at return. Quote valid 30 days.
+                </p>
+                <p className="mt-2 text-xs text-charcoal/60">
+                  Signed rental agreement at pickup
+                  {hasRecreational && ', plus a signed release from every driver and rider'}
+.{' '}
+                  <a href="#rental-terms" className="font-semibold text-forest underline underline-offset-2">
+                    Rental terms
+                  </a>
                 </p>
 
                 {/* Action buttons */}
@@ -730,7 +789,19 @@ export default function RentalBuilder() {
               </div>
             )}
             <div>
-              <span className="text-sm font-semibold text-charcoal">Do you have equipment insurance?</span>
+              <span className="text-sm font-semibold text-charcoal">
+                Do you have insurance for this rental?
+                {needsInsurance && <span className="text-orange"> *</span>}
+              </span>
+              {needsInsurance && (
+                <span className="mt-0.5 block text-xs text-charcoal/60">
+                  Required for{' '}
+                  heavy equipment without the damage waiver.{' '}
+                  <a href="#terms-insurance" className="font-semibold text-forest underline underline-offset-2">
+                    What we need
+                  </a>
+                </span>
+              )}
               <div className="mt-2 flex gap-3">
                 {['Yes', 'No'].map((opt) => (
                   <label
@@ -751,6 +822,17 @@ export default function RentalBuilder() {
                 ))}
               </div>
             </div>
+            {resForm.hasInsurance === 'yes' && (
+              <Field label="Insurance company" required={needsInsurance} optional={!needsInsurance}>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={resForm.insuranceCarrier}
+                  onChange={(e) => updateRes('insuranceCarrier', e.target.value)}
+                  placeholder="We'll ask for the certificate before pickup"
+                />
+              </Field>
+            )}
             <label className="flex cursor-pointer items-center gap-3 self-end rounded-lg border-2 border-forest/15 p-3">
               <input
                 type="checkbox"
@@ -771,6 +853,45 @@ export default function RentalBuilder() {
                 />
               </Field>
             </div>
+            <fieldset className="space-y-2 sm:col-span-2">
+              <legend className="text-sm font-semibold text-charcoal">
+                Agreements<span className="text-orange"> *</span>
+              </legend>
+              <Agreement
+                checked={resForm.confirmAgeLicense}
+                onChange={(v) => updateRes('confirmAgeLicense', v)}
+              >
+                I&rsquo;m 21 or older and will show a valid driver&rsquo;s license at pickup.
+              </Agreement>
+              <Agreement checked={resForm.agreeTerms} onChange={(v) => updateRes('agreeTerms', v)}>
+                I&rsquo;ve read and agree to the{' '}
+                <a href="#terms-rental-agreement" className="font-semibold text-forest underline underline-offset-2">
+                  rental agreement
+                </a>
+                ,{' '}
+                <a href="#terms-damage-waiver" className="font-semibold text-forest underline underline-offset-2">
+                  damage waiver
+                </a>{' '}
+                and{' '}
+                <a href="#terms-insurance" className="font-semibold text-forest underline underline-offset-2">
+                  insurance requirements
+                </a>
+                , and will sign the agreement at pickup.
+              </Agreement>
+              {hasRecreational && (
+                <Agreement checked={resForm.agreeRelease} onChange={(v) => updateRes('agreeRelease', v)}>
+                  I&rsquo;ve read the{' '}
+                  <a href="#terms-release" className="font-semibold text-forest underline underline-offset-2">
+                    release of liability
+                  </a>{' '}
+                  and{' '}
+                  <a href="#terms-drivers-riders" className="font-semibold text-forest underline underline-offset-2">
+                    rider rules
+                  </a>
+                  . Every driver and rider will sign the release before riding.
+                </Agreement>
+              )}
+            </fieldset>
             <div className="sm:col-span-2">
               <button type="submit" disabled={status === 'submitting'} className="btn-primary w-full">
                 {status === 'submitting' ? (
@@ -786,6 +907,28 @@ export default function RentalBuilder() {
         </div>
       )}
     </>
+  );
+}
+
+function Agreement({
+  checked,
+  onChange,
+  children,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex cursor-pointer items-start gap-3 rounded-lg border-2 border-forest/15 p-3">
+      <input
+        type="checkbox"
+        className="mt-0.5 h-5 w-5 shrink-0 accent-orange"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+      <span className="text-sm text-charcoal/80">{children}</span>
+    </label>
   );
 }
 

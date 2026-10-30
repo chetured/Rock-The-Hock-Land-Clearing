@@ -1,5 +1,6 @@
 import RentalBuilder from '@/components/RentalBuilder';
 import RentalCompare from '@/components/RentalCompare';
+import RentalTerms from '@/components/RentalTerms';
 
 export default function Rentals() {
   return (
@@ -9,7 +10,7 @@ export default function Rentals() {
           <span className="eyebrow">Self-serve pricing</span>
           <h2 className="text-3xl sm:text-4xl">Rent our equipment</h2>
           <p className="mx-auto mt-3 max-w-xl text-charcoal/75">
-            Pick what you need, see your price instantly, then reserve. No surprise fees.
+            Heavy equipment, golf carts and the Segway Villain side-by-side. Pick what you need, see your price instantly, then reserve. No surprise fees.
           </p>
         </div>
 
@@ -22,6 +23,11 @@ export default function Rentals() {
           <div className="hidden print:block">
             <PrintQuote />
           </div>
+        </div>
+
+        {/* Agreement, waivers and insurance */}
+        <div className="mt-16 border-t-2 border-forest/10 pt-12 print:hidden">
+          <RentalTerms />
         </div>
 
         {/* Compare before you rent */}
