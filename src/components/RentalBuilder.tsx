@@ -297,7 +297,7 @@ export default function RentalBuilder() {
         <PartyPopper className="mx-auto h-12 w-12 text-orange" />
         <h3 className="mt-4 text-2xl sm:text-3xl">Got it.</h3>
         <p className="mx-auto mt-4 max-w-xl text-lg text-charcoal/80">
-          Shay will call to confirm availability, usually same day.
+          We&rsquo;ll call to confirm availability, usually same day.
           {needsInsurance && ` Email your certificate of insurance to ${BUSINESS.email} before pickup.`} Bring your
           driver&rsquo;s license to sign the agreement{hasRecreational && ' and release'}. Need it sooner? Call{' '}
           <a href={`tel:${BUSINESS.phoneRaw}`} className="font-bold text-forest underline underline-offset-2">
