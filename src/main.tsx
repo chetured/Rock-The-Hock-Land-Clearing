@@ -1,12 +1,14 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { hydrateRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { initAnalytics } from './lib/analytics';
 
 initAnalytics();
 
-createRoot(document.getElementById('root')!).render(
+// The HTML is prerendered at build time (scripts/prerender.mjs); hydrate it.
+hydrateRoot(
+  document.getElementById('root')!,
   <StrictMode>
     <App />
   </StrictMode>

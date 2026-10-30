@@ -31,15 +31,16 @@ export default function Hero() {
         src={`${PHOTO_BASE}hero-mulching.jpg`}
         alt=""
         className="sr-only"
-        fetchPriority="high"
+        // React 18 only passes the lowercase attribute through to the DOM.
+        {...{ fetchpriority: 'high' }}
       />
       <div className="mx-auto max-w-6xl px-4 py-20 text-center text-white sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-        <span className="eyebrow text-orange-light">Hocking County &amp; Southeast Ohio</span>
+        <span className="eyebrow text-orange-light">Overgrown land? We clear it.</span>
         <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl">
-          Overgrown land? We clear it.
+          Land clearing &amp; forestry mulching in Logan, Ohio
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-white/85 sm:text-xl">
-          Forestry mulching, lot clearing and brush removal in Hocking County and southeast Ohio.
+          Lot clearing, brush removal, driveways and septic installs across Hocking County and southeast Ohio.
           Free on-site estimates.
         </p>
 
