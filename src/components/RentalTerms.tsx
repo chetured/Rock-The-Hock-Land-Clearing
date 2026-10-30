@@ -22,8 +22,8 @@ export default function RentalTerms() {
       <h3 className="text-2xl sm:text-3xl">Rental terms, waivers and insurance</h3>
       <p className="mt-3 max-w-2xl text-charcoal/75">
         The short version: renter 21+ with a driver&rsquo;s license, a card for the deposit, and a signed agreement at
-        pickup. Golf carts and the Segway Villain also need a signed release from every rider. Offsite and business
-        rentals need proof of insurance.
+        pickup. Golf carts and the Segway Villain also need a signed release from every rider. Business rentals of heavy
+        equipment need proof of insurance.
       </p>
       <div className="mt-6 space-y-3">
         {RENTAL_TERMS.map((section) => (

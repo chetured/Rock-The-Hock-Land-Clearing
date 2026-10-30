@@ -25,12 +25,8 @@ export type RentalItem = {
   // Golf carts and side-by-sides: needs the release of liability, a licensed
   // adult driver, and the damage waiver (it can't be declined).
   recreational?: boolean;
-  // Leaves our property, so the renter must show proof of insurance.
-  offsite?: boolean;
   // Card hold for this item; the quote uses the largest one in the cart.
   deposit?: number;
-  // Another item that can't be in the cart at the same time (onsite vs offsite).
-  excludes?: string;
 };
 
 export const RENTAL_ITEMS: RentalItem[] = [
@@ -149,10 +145,10 @@ export const RENTAL_ITEMS: RentalItem[] = [
     notes: 'Private property and event grounds only. Not street legal. Driver 21+ with a valid driver\u2019s license.',
   },
   {
-    id: 'segway-villain-onsite',
-    name: 'Segway Villain side-by-side: onsite riding',
+    id: 'segway-villain',
+    name: 'Segway Villain SX10 W 72-inch side-by-side: onsite riding',
     category: 'Recreation',
-    blurb: 'Ride the Segway Villain sport side-by-side on our property near Logan. Helmets and eye protection provided.',
+    blurb: 'Ride the 72-inch Segway Villain sport side-by-side on our property near Logan. Onsite riding only. Helmets and eye protection provided.',
     rate4hr: null,
     rateDay: 500,
     rateWeek: 500 * 7,
@@ -161,34 +157,11 @@ export const RENTAL_ITEMS: RentalItem[] = [
     dayRateOnly: true,
     recreational: true,
     deposit: 1000,
-    image: 'rental-segway-villain',
+    image: 'rental-segway-villain-72',
     imageExt: 'png',
     imageContain: true,
-    excludes: 'segway-villain-offsite',
-    badge: 'Onsite riding',
+    badge: 'Onsite riding only',
     notes: 'Driver 21+ with a valid driver\u2019s license. Every rider signs the release before riding. Short safety briefing first.',
-  },
-  {
-    id: 'segway-villain-offsite',
-    name: 'Segway Villain side-by-side: take it to your property',
-    category: 'Recreation',
-    blurb: 'Take the Segway Villain to your own land. We deliver it, or you tow it with a rated truck and trailer.',
-    rate4hr: null,
-    rateDay: 600,
-    rateWeek: 600 * 7,
-    rate4Week: 600 * 28,
-    requiresMachine: false,
-    dayRateOnly: true,
-    recreational: true,
-    offsite: true,
-    deposit: 1000,
-    image: 'rental-segway-villain',
-    imageExt: 'png',
-    imageContain: true,
-    excludes: 'segway-villain-onsite',
-    badge: 'Offsite',
-    notes:
-      'Private property only, never public roads. Proof of insurance required before pickup. Driver 21+ with a valid driver\u2019s license.',
   },
 ];
 
@@ -209,10 +182,6 @@ function cartItems(cart: string[]): RentalItem[] {
 
 export function cartHasRecreational(cart: string[]): boolean {
   return cartItems(cart).some((i) => i.recreational);
-}
-
-export function cartHasOffsiteRecreational(cart: string[]): boolean {
-  return cartItems(cart).some((i) => i.recreational && i.offsite);
 }
 
 export function cartHasEquipment(cart: string[]): boolean {
@@ -435,7 +404,7 @@ export function buildPlainTextQuote(params: {
   lines.push('');
   lines.push('Estimate. Fuel, extra engine hours and damage are billed at return. Quote valid 30 days.');
   lines.push('Signed rental agreement required at pickup. Golf carts and side-by-sides also need a signed');
-  lines.push('release of liability from every driver and rider. Offsite rentals need proof of insurance.');
+  lines.push('release of liability from every driver and rider.');
   lines.push(`Call (614) 379-2170 to confirm availability.`);
   return lines.join('\n');
 }

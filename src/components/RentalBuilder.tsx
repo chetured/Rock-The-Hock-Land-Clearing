@@ -31,7 +31,6 @@ import {
   BUCKET,
   quoteIncludesBucket,
   cartHasRecreational,
-  cartHasOffsiteRecreational,
   cartHasEquipment,
   type QuoteResult,
 } from '@/lib/rentals';
@@ -115,15 +114,13 @@ export default function RentalBuilder() {
 
   const hasMachine = cart.includes('cat-289d3') || cart.includes('mulcher-package');
   const hasRecreational = cartHasRecreational(cart);
-  const hasOffsiteRecreational = cartHasOffsiteRecreational(cart);
   const hasEquipment = cartHasEquipment(cart);
-  // Proof of insurance is required for offsite side-by-sides and for heavy
-  // equipment when the damage waiver is declined.
-  const needsInsurance = hasOffsiteRecreational || (hasEquipment && !waiver);
+  // Proof of insurance is required for heavy equipment when the damage waiver
+  // is declined.
+  const needsInsurance = hasEquipment && !waiver;
 
   function toggleItem(id: string) {
-    const excludes = RENTAL_ITEMS.find((i) => i.id === id)?.excludes;
-    setCart((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c.filter((x) => x !== excludes), id]));
+    setCart((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
   }
 
   function addMachine() {
@@ -693,7 +690,7 @@ export default function RentalBuilder() {
                 <p className="mt-2 text-xs text-charcoal/60">
                   Signed rental agreement at pickup
                   {hasRecreational && ', plus a signed release from every driver and rider'}
-                  {hasOffsiteRecreational && '. Proof of insurance required'}.{' '}
+.{' '}
                   <a href="#rental-terms" className="font-semibold text-forest underline underline-offset-2">
                     Rental terms
                   </a>
@@ -799,7 +796,7 @@ export default function RentalBuilder() {
               {needsInsurance && (
                 <span className="mt-0.5 block text-xs text-charcoal/60">
                   Required for{' '}
-                  {hasOffsiteRecreational ? 'taking the Segway Villain offsite' : 'heavy equipment without the damage waiver'}.{' '}
+                  heavy equipment without the damage waiver.{' '}
                   <a href="#terms-insurance" className="font-semibold text-forest underline underline-offset-2">
                     What we need
                   </a>

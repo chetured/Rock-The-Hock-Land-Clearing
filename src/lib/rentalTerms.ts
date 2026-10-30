@@ -58,11 +58,10 @@ export const RENTAL_TERMS: TermsSection[] = [
   {
     id: 'insurance',
     title: 'Insurance requirements',
-    appliesTo: 'Offsite and business rentals',
+    appliesTo: 'Business and event rentals',
     bullets: [
       `Heavy equipment without the damage waiver: a certificate of insurance for rented or leased equipment (inland marine) at full replacement value, naming ${BUSINESS.legalName} as loss payee.`,
       `Contractors and businesses: general liability of at least $1,000,000 per occurrence, naming ${BUSINESS.legalName} as additional insured.`,
-      'Segway Villain taken offsite: proof of liability insurance of at least $300,000 that covers you operating a rented side-by-side on your property (a homeowners, farm or powersports policy; check with your agent, many homeowners policies exclude off-road vehicles away from home). The damage waiver is also required.',
       'Golf carts at events or private property: proof of the host’s liability insurance (homeowners, farm or event policy).',
       `Email the certificate to ${BUSINESS.email} before pickup. No proof, no rental.`,
     ],
@@ -77,7 +76,8 @@ export const RENTAL_TERMS: TermsSection[] = [
       'Never carry more people than there are seats. Passengers must be able to sit with their feet flat on the floor and hold the grab handle.',
       'Segway Villain: helmets and eye protection for everyone (we provide them), seat belts fastened, doors or nets closed, hands and feet inside.',
       'No riding after dark, in storms, on frozen ponds or across slopes steeper than the operator’s manual allows.',
-      'Onsite riding stays on the course we show you. Our staff can end a ride at any time for unsafe driving, without a refund.',
+      'The Segway Villain is onsite riding only: it never leaves our property. Stay on the course we show you.',
+      'Our staff can end a ride at any time for unsafe driving, without a refund.',
     ],
   },
   {
