@@ -14,7 +14,7 @@ const REASONS = [
   {
     icon: Phone,
     title: 'One owner who answers the phone',
-    blurb: 'Call or text and you talk to Shay, the owner. No call centers, no runaround.',
+    blurb: 'Call or text and you talk to the owner. No call centers, no runaround.',
   },
   {
     icon: FileText,

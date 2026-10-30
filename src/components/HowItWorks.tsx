@@ -9,7 +9,7 @@ const STEPS = [
   {
     icon: FileText,
     title: 'Free on-site walk and a fixed written quote',
-    blurb: 'Shay walks the property and sends a clear, written quote by text or email.',
+    blurb: 'The owner walks the property and sends a clear, written quote by text or email.',
   },
   {
     icon: TreePine,

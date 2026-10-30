@@ -8,7 +8,7 @@ export default function FinalCTA() {
       <div className="mx-auto max-w-3xl">
         <h2 className="text-3xl text-white sm:text-5xl">Ready to get your land back?</h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-white/90">
-          Free on-site estimates across Hocking County and southeast Ohio. Shay calls you back
+          Free on-site estimates across Hocking County and southeast Ohio. We call you back
           within one business day.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

@@ -2,11 +2,10 @@
 export const BUSINESS = {
   name: 'Rock The Hock Land Clearing',
   legalName: 'RTH Group LLC',
-  owner: 'Shay Reddy',
   sisterCompany: 'Red Brick Ranch',
   phone: '(614) 379-2170',
   phoneRaw: '6143792170',
-  email: 'shay@rthllc.com',
+  email: 'info@rthllc.com',
   city: 'Logan',
   region: 'OH',
   county: 'Hocking County',
