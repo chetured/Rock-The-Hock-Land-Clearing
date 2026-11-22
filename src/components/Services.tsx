@@ -9,6 +9,8 @@ import {
   Ruler,
   Droplets,
   Truck,
+  Trash2,
+  Caravan,
 } from 'lucide-react';
 import { SERVICES } from '@/lib/constants';
 
@@ -23,6 +25,8 @@ const ICONS = [
   Ruler,
   Droplets,
   Truck,
+  Trash2,
+  Caravan,
 ];
 
 export default function Services() {
@@ -33,7 +37,7 @@ export default function Services() {
           <span className="eyebrow">What we do</span>
           <h2 className="text-3xl sm:text-4xl">Services</h2>
           <p className="mx-auto mt-3 max-w-xl text-charcoal/75">
-            One machine, ten jobs. Pick what you need and we’ll quote it free.
+            A track loader, a dump truck and a trailer. Pick what you need and we’ll quote it free.
           </p>
         </div>
 

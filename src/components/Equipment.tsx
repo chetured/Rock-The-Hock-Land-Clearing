@@ -1,4 +1,4 @@
-import { Cog } from 'lucide-react';
+import { Truck } from 'lucide-react';
 import { EQUIPMENT, PHOTO_BASE } from '@/lib/constants';
 
 type EquipmentImage = { src: string; contain?: boolean };
@@ -18,7 +18,7 @@ export default function Equipment() {
           <span className="eyebrow text-orange-light">Built for southeast Ohio terrain</span>
           <h2 className="text-3xl sm:text-4xl">Our equipment</h2>
         </div>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {EQUIPMENT.map((e) => {
             const img = EQUIPMENT_IMAGES[e.label];
             return (
@@ -36,8 +36,8 @@ export default function Equipment() {
                     />
                   </div>
                 ) : (
-                  <div className="p-6">
-                    <Cog className="h-9 w-9 text-orange" />
+                  <div className="flex aspect-[4/3] w-full items-center justify-center bg-forest-light/60">
+                    <Truck className="h-16 w-16 text-orange" />
                   </div>
                 )}
                 <div className="p-6 pt-4">

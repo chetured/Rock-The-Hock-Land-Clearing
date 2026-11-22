@@ -86,11 +86,67 @@ export const SERVICES = [
       'New and replacement septic tank installs, including excavation and backfill. We walk the site and quote it with you.',
   },
   {
-    id: 'gravel-delivery',
-    label: 'Gravel delivery',
-    blurb: 'Gravel and stone delivered and spread for driveways, pads and parking areas.',
+    id: 'gravel-dirt-delivery',
+    label: 'Gravel, topsoil and fill dirt delivery',
+    blurb:
+      'Our own dump truck brings gravel, stone, topsoil, fill dirt and mulch, and our track loader spreads it.',
+  },
+  {
+    id: 'debris-haul-off',
+    label: 'Debris, brush and dirt haul-off',
+    blurb: 'We load it with the track loader and haul it away: brush, stumps, spoil dirt, rock and old concrete.',
+  },
+  {
+    id: 'equipment-hauling',
+    label: 'Equipment and material hauling',
+    blurb:
+      'Long tilt trailer and a flatbed truck for moving skid steers, tractors, mowers, campers and materials.',
   },
 ] as const;
+
+// Service ids that are trucking jobs. When a visitor picks only these, the
+// quote form asks what and how much to haul instead of acreage and vegetation.
+export const HAULING_SERVICE_IDS = ['gravel-dirt-delivery', 'debris-haul-off', 'equipment-hauling'] as const;
+
+// Public "starting at" trucking prices. Starting guesses, confirm before relying on them.
+// Keep in step with /mnt/project-files/quotes/trucking-rates.xlsx (internal bid rate sheet).
+export const HAULING_RATES = [
+  {
+    id: 'delivery',
+    title: 'Gravel and dirt delivery',
+    price: 'From $175 a load',
+    detail: 'Trucking within 15 miles of Logan, plus the material. Farther out is priced by distance.',
+  },
+  {
+    id: 'hourly',
+    title: 'Dump truck by the hour',
+    price: '$100 an hour',
+    detail: 'Truck and driver, 2-hour minimum, counted from when we leave the yard.',
+  },
+  {
+    id: 'haul-off',
+    title: 'Debris haul-off',
+    price: 'From $350 a load',
+    detail: 'Loaded with our track loader and hauled away. Dump and landfill fees at cost.',
+  },
+  {
+    id: 'equipment',
+    title: 'Equipment hauling',
+    price: 'From $150 each way',
+    detail: 'Tilt trailer moves within 25 miles of Logan. $4 a loaded mile beyond that.',
+  },
+] as const;
+
+export const HAULING_MATERIALS = [
+  'Gravel or stone',
+  'Topsoil or fill dirt',
+  'Mulch',
+  'Brush, stumps or debris to haul away',
+  'Dirt, rock or concrete to haul away',
+  'A machine, vehicle or trailer to move',
+  'Something else',
+];
+export const HAULING_AMOUNTS = ['1 load', '2 to 3 loads', '4 or more loads', 'Not sure'];
 
 export const EQUIPMENT = [
   {
@@ -108,6 +164,14 @@ export const EQUIPMENT = [
   {
     label: 'Raytree RMA42 auger, Raytree RMSC78 78-inch power rake, GIYI GY-D680 post driver and pallet forks',
     blurb: 'Four attachments for posts, grading, lifting and prep.',
+  },
+  {
+    label: 'International 4700 dump truck',
+    blurb: 'Delivers gravel, topsoil and fill, and hauls off brush, dirt and debris.',
+  },
+  {
+    label: 'Ford F-350 flatbed and long tilt trailer',
+    blurb: 'Moves our track loader to your job, and hauls equipment and materials for you.',
   },
 ] as const;
 
@@ -135,5 +199,9 @@ export const FAQ_ITEMS = [
   {
     q: 'What happens to the stumps?',
     a: 'Mulching takes stumps down to about ground level. Let us know if you need them fully removed for building.',
+  },
+  {
+    q: 'Do you deliver gravel and haul stuff away?',
+    a: 'Yes. We run our own dump truck and tilt trailer, so we can bring in gravel, topsoil and fill, haul off brush and debris, and move equipment. Tell us what and how much in the quote form.',
   },
 ] as const;
