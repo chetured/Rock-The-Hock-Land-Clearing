@@ -7,6 +7,7 @@ const EQUIPMENT_IMAGES: Record<string, EquipmentImage> = {
   'Cat 289D3 compact track loader': { src: 'cat-289d3.jpg' },
   'Raytree RMDM72SS 72-inch drum mulcher': { src: 'rental-drum-mulcher.webp', contain: true },
   'Top Cat HDRC 72-inch brush cutter': { src: 'rental-brush-cutter.jpg' },
+  'International 4700 dump truck': { src: 'dump-truck-2.webp' },
   'Raytree RMA42 auger, Raytree RMSC78 78-inch power rake, GIYI GY-D680 post driver and pallet forks': { src: 'rental-power-rake.jpg' },
 };
 

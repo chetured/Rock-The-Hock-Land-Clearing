@@ -1,5 +1,10 @@
 import { Truck, Check } from 'lucide-react';
-import { HAULING_RATES } from '@/lib/constants';
+import { HAULING_RATES, PHOTO_BASE } from '@/lib/constants';
+
+const TRUCK_PHOTOS = [
+  { src: 'dump-truck-1.webp', alt: 'Our International 4700 dump truck, front three-quarter view' },
+  { src: 'dump-truck-3.webp', alt: 'Side view of our dump truck and its steel dump bed' },
+];
 
 const WHAT_WE_HAUL = [
   'Driveway gravel, #57, #304 and crusher run',
@@ -34,6 +39,18 @@ export default function Hauling() {
               <p className="mt-1 font-heading text-2xl uppercase text-orange">{r.price}</p>
               <p className="mt-2 flex-1 text-sm text-charcoal/70">{r.detail}</p>
             </article>
+          ))}
+        </div>
+
+        <div className="mt-10 grid gap-5 sm:grid-cols-2">
+          {TRUCK_PHOTOS.map((p) => (
+            <img
+              key={p.src}
+              src={`${PHOTO_BASE}${p.src}`}
+              alt={p.alt}
+              loading="lazy"
+              className="aspect-[4/3] w-full rounded-xl object-cover shadow-sm"
+            />
           ))}
         </div>
 
