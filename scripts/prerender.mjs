@@ -4,7 +4,7 @@
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 
 const dist = new URL('../dist/', import.meta.url);
-const { render, ROUTES, headFor } = await import('../dist-ssr/entry-server.js');
+const { render, ROUTES, headFor, sitemapXml, llmsTxt } = await import('../dist-ssr/entry-server.js');
 
 const template = await readFile(new URL('index.html', dist), 'utf8');
 const marker = '<div id="root"></div>';
@@ -27,6 +27,8 @@ for (const route of ROUTES) {
   html = swap(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${head.canonical}$2`, 'og:url');
   html = swap(html, /(<meta name="twitter:title" content=")[^"]*(")/, `$1${esc(head.title)}$2`, 'twitter:title');
   html = swap(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${esc(head.description)}$2`, 'twitter:description');
+  html = swap(html, /(<meta property="og:image" content=")[^"]*(")/, `$1${head.image}$2`, 'og:image');
+  html = swap(html, /(<meta name="twitter:image" content=")[^"]*(")/, `$1${head.image}$2`, 'twitter:image');
   html = swap(html, /(<link rel="canonical" href=")[^"]*(")/, `$1${head.canonical}$2`, 'canonical');
   const ld = head.jsonLd
     .map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`)
@@ -39,4 +41,7 @@ for (const route of ROUTES) {
   await writeFile(out, html);
   console.log(`prerender: wrote ${route}`);
 }
+await writeFile(new URL('sitemap.xml', dist), sitemapXml(new Date().toISOString().slice(0, 10)));
+await writeFile(new URL('llms.txt', dist), llmsTxt());
+console.log(`prerender: wrote sitemap.xml and llms.txt (${ROUTES.length} URLs)`);
 await rm(new URL('../dist-ssr', import.meta.url), { recursive: true, force: true });
