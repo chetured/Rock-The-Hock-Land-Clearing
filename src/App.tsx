@@ -13,8 +13,11 @@ import ServiceArea from '@/components/ServiceArea';
 import FAQ from '@/components/FAQ';
 import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
+import LandingPage from '@/components/LandingPage';
+import { findPage } from '@/lib/pages';
 
-export default function App() {
+export default function App({ path = '/' }: { path?: string }) {
+  const page = findPage(path);
   const [presetService, setPresetService] = useState<string | undefined>(undefined);
 
   // When a visitor clicks "Get a quote for this" on a service card, preselect
@@ -33,6 +36,14 @@ export default function App() {
       const label = target.getAttribute('data-service');
       if (label) handleServiceSelect(label);
     }
+  }
+
+  if (page) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <LandingPage page={page} />
+      </div>
+    );
   }
 
   return (

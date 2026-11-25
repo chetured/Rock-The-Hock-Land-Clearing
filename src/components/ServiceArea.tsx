@@ -1,5 +1,6 @@
 import { MapPin, MessageSquare } from 'lucide-react';
 import { BUSINESS } from '@/lib/constants';
+import { LOCATION_PAGES, pageUrl } from '@/lib/pages';
 
 export default function ServiceArea() {
   return (
@@ -20,6 +21,16 @@ export default function ServiceArea() {
                 >
                   <MapPin className="h-4 w-4 shrink-0 text-orange" />
                   {town}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-sm font-bold uppercase tracking-wide text-forest">Area guides</p>
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              {LOCATION_PAGES.map((p) => (
+                <li key={p.slug}>
+                  <a href={pageUrl(p)} className="font-semibold text-orange hover:text-orange-dark">
+                    Land clearing in {p.navLabel} →
+                  </a>
                 </li>
               ))}
             </ul>

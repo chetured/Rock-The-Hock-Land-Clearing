@@ -10,6 +10,6 @@ initAnalytics();
 hydrateRoot(
   document.getElementById('root')!,
   <StrictMode>
-    <App />
+    <App path={window.location.pathname} />
   </StrictMode>
 );

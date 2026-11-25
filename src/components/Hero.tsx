@@ -37,10 +37,10 @@ export default function Hero() {
       <div className="mx-auto max-w-6xl px-4 py-20 text-center text-white sm:px-6 sm:py-28 lg:px-8 lg:py-32">
         <span className="eyebrow text-orange-light">Overgrown land? We clear it.</span>
         <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl">
-          Land clearing &amp; forestry mulching in Logan, Ohio
+          Land clearing &amp; forestry mulching in Logan and the Hocking Hills
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-white/85 sm:text-xl">
-          Lot clearing, brush removal, driveways and septic installs across Hocking County and southeast Ohio.
+          Land clearing services, brush removal, driveways and septic installs across Hocking County and southeast Ohio.
           Free on-site estimates.
         </p>
 

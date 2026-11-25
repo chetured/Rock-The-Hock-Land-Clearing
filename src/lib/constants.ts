@@ -176,8 +176,12 @@ export const EQUIPMENT = [
 
 export const FAQ_ITEMS = [
   {
+    q: 'Is there a land clearing company near me in the Hocking Hills?',
+    a: 'Yes. Rock The Hock Land Clearing is based in Logan, Ohio, the county seat of Hocking County. We do forestry mulching, land clearing, brush clearing, gravel driveways and septic tank installs across Hocking, Fairfield, Athens, Vinton, Perry and Pickaway counties. Call or text (614) 379-2170.',
+  },
+  {
     q: 'How much does land clearing cost?',
-    a: 'Every property is different, so we price each job after a free look. Send photos and the rough acreage and we\u2019ll get back to you fast.',
+    a: 'Every property is different, so we price each job after a free look. Price depends on how steep the ground is, how thick the brush is, tree size and how far we haul the machine. Your written quote lists fuel and equipment delivery as their own lines. Send photos and the rough acreage and we\u2019ll get back to you fast.',
   },
   {
     q: 'What is forestry mulching?',
@@ -198,6 +202,10 @@ export const FAQ_ITEMS = [
   {
     q: 'What happens to the stumps?',
     a: 'Mulching takes stumps down to about ground level. Let us know if you need them fully removed for building.',
+  },
+  {
+    q: 'Can I rent land clearing equipment from you?',
+    a: 'Yes. We rent our Cat 289D3 track loader, a forestry mulcher package and skid steer attachments like a brush cutter, auger, power rake and post driver. See the equipment rental section for prices.',
   },
   {
     q: 'Do you deliver gravel and haul stuff away?',

@@ -13,6 +13,7 @@ import {
   Caravan,
 } from 'lucide-react';
 import { SERVICES } from '@/lib/constants';
+import { SERVICE_PAGES, pageUrl } from '@/lib/pages';
 
 const ICONS = [
   Trees,
@@ -44,6 +45,7 @@ export default function Services() {
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICES.map((s, i) => {
             const Icon = ICONS[i] ?? Trees;
+            const page = SERVICE_PAGES.find((p) => p.presetService === s.label);
             return (
               <article
                 key={s.id}
@@ -52,6 +54,14 @@ export default function Services() {
                 <Icon className="h-9 w-9 text-forest" />
                 <h3 className="mt-4 text-lg normal-case">{s.label}</h3>
                 <p className="mt-2 flex-1 text-sm text-charcoal/70">{s.blurb}</p>
+                {page && (
+                  <a
+                    href={pageUrl(page)}
+                    className="mt-3 text-sm font-semibold text-forest underline decoration-orange/60 underline-offset-2 hover:text-orange"
+                  >
+                    More about {page.navLabel.toLowerCase()}
+                  </a>
+                )}
                 <a
                   href="#quote"
                   data-service={s.label}
