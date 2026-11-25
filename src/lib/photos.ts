@@ -56,7 +56,7 @@ export const PHOTOS = {
   cat289d3: {
     source: 'cat-289d3.jpg',
     file: 'cat-289d3-compact-track-loader-logan-ohio.jpg',
-    alt: 'Front view of Rock The Hock's Cat 289D3 compact track loader in Logan, Ohio',
+    alt: 'Front view of the Rock The Hock Cat 289D3 compact track loader in Logan, Ohio',
   },
   mulcherPackage: {
     source: 'mulching-package.jpg',
