@@ -30,7 +30,7 @@ export const TOWN_PAGES: LandingPage[] = [
           'Gravel driveways, grading and seed bed prep',
           'Septic tank installation',
           'Gravel, topsoil and fill dirt delivery',
-          'Skid steer and attachment rental',
+          'Post holes and fence post driving',
         ],
       },
       {

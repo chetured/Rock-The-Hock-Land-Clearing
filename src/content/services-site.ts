@@ -567,8 +567,8 @@ export const SITE_SERVICES: LandingPage[] = [
         a: 'We clear the line and set the posts. Wire and the finished fence are up to you or your fence builder.',
       },
       {
-        q: 'Can I rent the auger or post driver instead?',
-        a: 'Yes. Both are on our rental list for use on a skid steer or our Cat 289D3.',
+        q: 'What equipment do you use for post holes?',
+        a: 'A Raytree RMA42 auger and a GIYI GY-D680 hydraulic post driver, both run on our Cat 289D3 track loader. We bring them on our own truck and trailer.',
       },
     ],
   },

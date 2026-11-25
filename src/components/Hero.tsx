@@ -49,11 +49,11 @@ export default function Hero() {
             Get my free quote
           </a>
           <a
-            href="#rentals"
+            href="#equipment"
             className="btn-secondary w-full text-lg sm:w-auto"
           >
             <Truck className="h-5 w-5" />
-            Rent our equipment
+            See our equipment
           </a>
           <a
             href={`tel:${BUSINESS.phoneRaw}`}

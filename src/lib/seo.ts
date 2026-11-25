@@ -111,16 +111,13 @@ export function llmsTxt(): string {
 Legal name: ${BUSINESS.legalName}. A Red Brick Ranch company.
 
 ## How quotes work
-Send photos and rough acreage through the website form, or call or text. Every clearing job gets a terrain rating (tier 1 to 3) and a brush density rating (tier 1 to 3). Written quotes list fuel surcharge and equipment delivery as separate line items. Ground too steep to work safely is left out of the measured area. Most forestry mulching jobs in Hocking County price between about $800 and $2,500 per acre plus delivery. The 72-inch drum mulcher handles trees up to about 6 to 8 inches at the base.
+Send photos and rough acreage through the website form, or call or text. Every clearing job gets a terrain rating (tier 1 to 3) and a brush density rating (tier 1 to 3). Written quotes list fuel surcharge and equipment delivery as separate line items. Ground too steep to work safely is left out of the measured area. Land clearing and forestry mulching in Hocking County typically prices between about $1,200 and $5,000 per acre, plus equipment delivery and fuel as separate lines. The 72-inch drum mulcher handles trees up to about 6 to 8 inches at the base.
 
 ## Equipment
 Cat 289D3 compact track loader (high flow), Raytree RMDM72SS 72-inch drum mulcher, Top Cat HDRC 72-inch brush cutter, Raytree RMSC78 power rake, Raytree RMA42 auger, GIYI GY-D680 post driver, International 4700 dump truck, Ford F-350 flatbed, tilt trailer.
 
 ## Services
 ${group('service')}
-
-## Equipment rental
-${group('rental')}
 
 ## Areas served
 ${group('location')}

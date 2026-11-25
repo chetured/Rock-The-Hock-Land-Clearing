@@ -12,6 +12,24 @@
   status = 301
   force = true
 
+# Rental pages are hidden for now; send old links to the equipment section.
+[[redirects]]
+  from = "/skid-steer-rental/*"
+  to = "/#equipment"
+  status = 301
+[[redirects]]
+  from = "/forestry-mulcher-rental/*"
+  to = "/#equipment"
+  status = 301
+[[redirects]]
+  from = "/skid-steer-attachment-rental/*"
+  to = "/#equipment"
+  status = 301
+[[redirects]]
+  from = "/golf-cart-rental/*"
+  to = "/"
+  status = 301
+
 [[headers]]
   for = "/assets/*"
   [headers.values]
