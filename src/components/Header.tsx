@@ -5,6 +5,7 @@ import { trackEvent } from '@/lib/analytics';
 
 const NAV = [
   { label: 'Services', href: '#services' },
+  { label: 'Hauling', href: '#hauling' },
   { label: 'Rent equipment', href: '#rentals' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Service area', href: '#service-area' },
