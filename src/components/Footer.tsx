@@ -1,6 +1,6 @@
 import { TreePine, Phone, Mail, MapPin } from 'lucide-react';
 import { BUSINESS } from '@/lib/constants';
-import { LOCATION_PAGES, SERVICE_PAGES, pageUrl } from '@/lib/pages';
+import { LOCATION_PAGES, RENTAL_PAGES, SERVICE_PAGES, pageUrl } from '@/lib/pages';
 
 const QUICK = [
   { label: 'Home', href: '/' },
@@ -42,6 +42,16 @@ export default function Footer() {
             <h3 className="text-sm font-bold uppercase tracking-wide text-white">Services</h3>
             <ul className="mt-3 space-y-2 text-sm">
               {SERVICE_PAGES.map((p) => (
+                <li key={p.slug}>
+                  <a href={pageUrl(p)} className="hover:text-white">
+                    {p.navLabel}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <h3 className="mt-6 text-sm font-bold uppercase tracking-wide text-white">Equipment rental</h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {RENTAL_PAGES.map((p) => (
                 <li key={p.slug}>
                   <a href={pageUrl(p)} className="hover:text-white">
                     {p.navLabel}

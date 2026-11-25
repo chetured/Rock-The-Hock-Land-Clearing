@@ -2,10 +2,19 @@ import { useState } from 'react';
 import { Check, ChevronDown, MapPin, Phone, MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
 import QuoteForm from '@/components/QuoteForm';
+import Rentals from '@/components/Rentals';
 import Footer from '@/components/Footer';
 import { BUSINESS } from '@/lib/constants';
 import { trackEvent } from '@/lib/analytics';
-import { LOCATION_PAGES, SERVICE_PAGES, pageUrl, type LandingPage as Page } from '@/lib/pages';
+import { PHOTOS_BASE } from '@/lib/photos';
+import {
+  LOCATION_PAGES,
+  RENTAL_PAGES,
+  SERVICE_PAGES,
+  pageH1,
+  pageUrl,
+  type LandingPage as Page,
+} from '@/lib/pages';
 
 function PageFaq({ faqs }: { faqs: Page['faqs'] }) {
   const [open, setOpen] = useState<number | null>(0);
@@ -67,7 +76,8 @@ function LinkList({ title, pages, current }: { title: string; pages: Page[]; cur
 }
 
 export default function LandingPage({ page }: { page: Page }) {
-  const section = page.kind === 'service' ? 'Services' : 'Service areas';
+  const section = page.kind === 'service' ? 'Services' : page.kind === 'rental' ? 'Rentals' : 'Service areas';
+  const ctaHref = page.kind === 'rental' ? '#rentals' : '#quote';
   return (
     <>
       <Header />
@@ -80,11 +90,11 @@ export default function LandingPage({ page }: { page: Page }) {
               </a>{' '}
               / <span>{section}</span> / <span className="text-white/90">{page.navLabel}</span>
             </nav>
-            <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl">{page.h1}</h1>
+            <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl">{pageH1(page)}</h1>
             <p className="mt-5 max-w-3xl text-lg text-white/85">{page.intro}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#quote" className="btn-primary">
-                Get my free quote
+              <a href={ctaHref} className="btn-primary">
+                {page.kind === 'rental' ? 'Build my rental quote' : 'Get my free quote'}
               </a>
               <a
                 href={`tel:${BUSINESS.phoneRaw}`}
@@ -105,6 +115,23 @@ export default function LandingPage({ page }: { page: Page }) {
 
         <article className="section-pad bg-white">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-0">
+            {page.photos && page.photos.length > 0 && (
+              <div className="mb-10 grid gap-4 sm:grid-cols-2">
+                {page.photos.map((ph) => (
+                  <figure key={ph.file} className="overflow-hidden rounded-xl bg-cream">
+                    <img
+                      src={`${PHOTOS_BASE}${ph.file}`}
+                      alt={ph.alt}
+                      loading="lazy"
+                      width={800}
+                      height={600}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                    {ph.caption && <figcaption className="px-3 py-2 text-sm text-charcoal/70">{ph.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+            )}
             {page.sections.map((s) => (
               <section key={s.heading} className="mb-10">
                 <h2 className="text-2xl sm:text-3xl">{s.heading}</h2>
@@ -133,11 +160,12 @@ export default function LandingPage({ page }: { page: Page }) {
           </div>
         </article>
 
-        <QuoteForm presetService={page.presetService} />
+        {page.kind === 'rental' ? <Rentals /> : <QuoteForm presetService={page.presetService} />}
 
         <section className="section-pad bg-cream">
-          <div className="container-tight grid gap-10 lg:grid-cols-2">
+          <div className="container-tight grid gap-10 lg:grid-cols-3">
             <LinkList title="Our services" pages={SERVICE_PAGES} current={page.slug} />
+            <LinkList title="Equipment rental" pages={RENTAL_PAGES} current={page.slug} />
             <LinkList title="Areas we serve" pages={LOCATION_PAGES} current={page.slug} />
           </div>
         </section>
