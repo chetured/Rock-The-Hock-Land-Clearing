@@ -4,11 +4,12 @@ import { BUSINESS } from '@/lib/constants';
 import { trackEvent } from '@/lib/analytics';
 
 const NAV = [
-  { label: 'Services', href: '#services' },
-  { label: 'Rent equipment', href: '#rentals' },
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Service area', href: '#service-area' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Hauling', href: '/#hauling' },
+  { label: 'Rent equipment', href: '/#rentals' },
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'Service area', href: '/#service-area' },
+  { label: 'FAQ', href: '/#faq' },
 ];
 
 function fireCall() {
@@ -34,7 +35,7 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <a href="#top" className="flex items-center gap-2 text-white">
+          <a href="/" className="flex items-center gap-2 text-white">
             <TreePine className="h-7 w-7 text-orange" strokeWidth={2.2} />
             <span className="font-heading text-lg font-bold uppercase leading-none tracking-tight sm:text-xl">
               Rock The Hock

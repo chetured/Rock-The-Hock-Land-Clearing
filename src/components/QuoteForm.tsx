@@ -9,7 +9,14 @@ import {
   Phone,
   PartyPopper,
 } from 'lucide-react';
-import { BUSINESS, FORM_ENDPOINT, SERVICES } from '@/lib/constants';
+import {
+  BUSINESS,
+  FORM_ENDPOINT,
+  HAULING_AMOUNTS,
+  HAULING_MATERIALS,
+  HAULING_SERVICE_IDS,
+  SERVICES,
+} from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 import { trackEvent } from '@/lib/analytics';
 
@@ -17,6 +24,8 @@ type FormState = {
   services: string[];
   approxSize: string;
   vegetation: string;
+  haulMaterial: string;
+  haulAmount: string;
   addressOrRoad: string;
   townCounty: string;
   howSoon: string;
@@ -41,6 +50,9 @@ const VEG = [
 ];
 const HOW_SOON = ['ASAP', 'Within 2 weeks', 'Within a month', 'Just planning'];
 const CONTACT = ['Call', 'Text', 'Email'];
+const HAULING_LABELS: string[] = SERVICES.filter((s) =>
+  (HAULING_SERVICE_IDS as readonly string[]).includes(s.id),
+).map((s) => s.label);
 const TIME = ['Morning', 'Afternoon'];
 const REFERRAL = ['Google', 'Facebook', 'Nextdoor', 'Saw our truck/sign', 'Friend or neighbor', 'Other'];
 
@@ -48,6 +60,8 @@ const initialState: FormState = {
   services: [],
   approxSize: '',
   vegetation: '',
+  haulMaterial: '',
+  haulAmount: '',
   addressOrRoad: '',
   townCounty: '',
   howSoon: '',
@@ -119,8 +133,20 @@ export default function QuoteForm({ presetService }: { presetService?: string })
     setPhotos(photos.filter((_, i) => i !== idx));
   }
 
+  // Trucking-only requests skip acreage and vegetation and ask what to haul instead.
+  const hasHauling = form.services.some((s) => HAULING_LABELS.includes(s));
+  const onlyHauling = form.services.length > 0 && form.services.every((s) => HAULING_LABELS.includes(s));
+  const haulingSummary = hasHauling
+    ? `Hauling: ${form.haulMaterial || 'not given'}; amount: ${form.haulAmount || 'not given'}`
+    : '';
+
   function stepValid(): boolean {
-    if (step === 1) return form.services.length > 0 && !!form.approxSize && !!form.vegetation;
+    if (step === 1)
+      return (
+        form.services.length > 0 &&
+        (onlyHauling || (!!form.approxSize && !!form.vegetation)) &&
+        (!hasHauling || !!form.haulMaterial)
+      );
     if (step === 2) return !!form.townCounty.trim() && !!form.howSoon;
     if (step === 3)
       return !!form.name.trim() && isValidPhone(form.phone) && !!form.preferredContact;
@@ -196,7 +222,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
           address_or_road: form.addressOrRoad,
           town_county: form.townCounty,
           how_soon: form.howSoon,
-          notes: form.notes,
+          notes: [haulingSummary, form.notes].filter(Boolean).join('\n\n'),
           name: form.name,
           phone: form.phone,
           email: form.email || null,
@@ -222,6 +248,8 @@ export default function QuoteForm({ presetService }: { presetService?: string })
         services: form.services.join(', '),
         approx_size: form.approxSize,
         vegetation: form.vegetation,
+        hauling_material: hasHauling ? form.haulMaterial : '',
+        hauling_amount: hasHauling ? form.haulAmount : '',
         address_or_road: form.addressOrRoad,
         town_county: form.townCounty,
         how_soon: form.howSoon,
@@ -268,7 +296,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
           <PartyPopper className="mx-auto h-12 w-12 text-orange" />
           <h2 className="mt-4 text-3xl sm:text-4xl">Got it.</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-charcoal/80">
-            Shay will call or text you within one business day to set up your free estimate. Need it
+            We'll call or text you within one business day to set up your free estimate. Need it
             sooner? Call{' '}
             <a
               href={`tel:${BUSINESS.phoneRaw}`}
@@ -279,7 +307,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
             .
           </p>
           <a href={`tel:${BUSINESS.phoneRaw}`} className="btn-primary mt-6">
-            <Phone className="h-5 w-5" /> Call Shay now
+            <Phone className="h-5 w-5" /> Call us now
           </a>
         </div>
       </section>
@@ -293,7 +321,7 @@ export default function QuoteForm({ presetService }: { presetService?: string })
           <span className="eyebrow">Free, no-obligation</span>
           <h2 className="text-3xl sm:text-4xl">Get your free quote</h2>
           <p className="mx-auto mt-3 max-w-xl text-charcoal/75">
-            Three quick steps. Shay calls or texts you back within one business day.
+            Three quick steps. We call or text you back within one business day.
           </p>
         </div>
 
@@ -393,20 +421,42 @@ export default function QuoteForm({ presetService }: { presetService?: string })
                 </div>
               </div>
 
-              <ChoiceGroup
-                label="Approximate size"
-                name="approxSize"
-                options={SIZES}
-                value={form.approxSize}
-                onChange={(v) => update('approxSize', v)}
-              />
-              <ChoiceGroup
-                label="What is growing there?"
-                name="vegetation"
-                options={VEG}
-                value={form.vegetation}
-                onChange={(v) => update('vegetation', v)}
-              />
+              {hasHauling && (
+                <>
+                  <ChoiceGroup
+                    label="What are we hauling?"
+                    name="haulMaterial"
+                    options={HAULING_MATERIALS}
+                    value={form.haulMaterial}
+                    onChange={(v) => update('haulMaterial', v)}
+                  />
+                  <ChoiceGroup
+                    label="About how much?"
+                    name="haulAmount"
+                    options={HAULING_AMOUNTS}
+                    value={form.haulAmount}
+                    onChange={(v) => update('haulAmount', v)}
+                  />
+                </>
+              )}
+              {!onlyHauling && (
+                <>
+                  <ChoiceGroup
+                    label="Approximate size"
+                    name="approxSize"
+                    options={SIZES}
+                    value={form.approxSize}
+                    onChange={(v) => update('approxSize', v)}
+                  />
+                  <ChoiceGroup
+                    label="What is growing there?"
+                    name="vegetation"
+                    options={VEG}
+                    value={form.vegetation}
+                    onChange={(v) => update('vegetation', v)}
+                  />
+                </>
+              )}
             </fieldset>
           )}
 

@@ -4,6 +4,7 @@ import Hero from '@/components/Hero';
 import QuoteForm from '@/components/QuoteForm';
 import HowItWorks from '@/components/HowItWorks';
 import Services from '@/components/Services';
+import Hauling from '@/components/Hauling';
 import Rentals from '@/components/Rentals';
 import Gallery from '@/components/Gallery';
 import WhyChooseUs from '@/components/WhyChooseUs';
@@ -12,8 +13,11 @@ import ServiceArea from '@/components/ServiceArea';
 import FAQ from '@/components/FAQ';
 import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
+import LandingPage from '@/components/LandingPage';
+import { findPage } from '@/lib/pages';
 
-export default function App() {
+export default function App({ path = '/' }: { path?: string }) {
+  const page = findPage(path);
   const [presetService, setPresetService] = useState<string | undefined>(undefined);
 
   // When a visitor clicks "Get a quote for this" on a service card, preselect
@@ -34,6 +38,14 @@ export default function App() {
     }
   }
 
+  if (page) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <LandingPage page={page} />
+      </div>
+    );
+  }
+
   return (
     <div onClick={onRootClick} className="min-h-screen bg-cream">
       <Header />
@@ -42,6 +54,7 @@ export default function App() {
         <QuoteForm presetService={presetService} />
         <HowItWorks />
         <Services />
+        <Hauling />
         <Rentals />
         <Gallery />
         <WhyChooseUs />
