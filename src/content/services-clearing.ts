@@ -292,7 +292,7 @@ export const CLEARING_SERVICES: LandingPage[] = [
       },
       {
         q: 'How much does brush clearing cost per acre?',
-        a: 'Light overgrowth that the brush cutter can handle on easy ground often runs a few hundred dollars an acre. Once saplings are mixed in and the mulcher is needed, it is priced like forestry mulching, roughly $800 to $2,500 an acre depending on terrain and density. Equipment delivery is a separate line. Photos get you a quick ballpark.',
+        a: 'Most land clearing we do runs about $1,200 to $5,000 an acre. Light overgrowth that the brush cutter can knock down on flat, easy ground sits at the low end. Saplings mixed in, thick brush or a steep hillside push it toward the high end. Equipment delivery and fuel are separate lines on the written quote. Photos get you a quick ballpark.',
       },
       { q: 'How thick a sapling can you cut?', a: TREE_SIZE },
       {
@@ -396,7 +396,7 @@ export const CLEARING_SERVICES: LandingPage[] = [
       },
       {
         q: 'How much does it cost to clear a lot for a house?',
-        a: 'For a typical one-acre wooded homesite, mulching the lot is often in the $800 to $2,500 range depending on terrain and brush, and stump removal, pad grading, the driveway and gravel are added on top. We give a written, itemized quote after walking the lot with you.',
+        a: 'For a typical one-acre wooded homesite, mulching the lot is often in the $1,200 to $5,000 range depending on terrain and brush, and stump removal, pad grading, the driveway and gravel are added on top. We give a written, itemized quote after walking the lot with you.',
       },
       { q: 'How big a tree can you take down?', a: TREE_SIZE },
       {

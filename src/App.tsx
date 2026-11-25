@@ -5,7 +5,6 @@ import QuoteForm from '@/components/QuoteForm';
 import HowItWorks from '@/components/HowItWorks';
 import Services from '@/components/Services';
 import Hauling from '@/components/Hauling';
-import Rentals from '@/components/Rentals';
 import Gallery from '@/components/Gallery';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import Equipment from '@/components/Equipment';
@@ -54,11 +53,10 @@ export default function App({ path = '/' }: { path?: string }) {
         <QuoteForm presetService={presetService} />
         <HowItWorks />
         <Services />
+        <Equipment />
         <Hauling />
-        <Rentals />
         <Gallery />
         <WhyChooseUs />
-        <Equipment />
         <ServiceArea />
         <FAQ />
         <FinalCTA />

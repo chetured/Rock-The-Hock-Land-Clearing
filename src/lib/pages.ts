@@ -40,7 +40,8 @@ const withPhotos = (pages: LandingPage[]) =>
 export const SERVICE_PAGES: LandingPage[] = withPhotos([...CLEARING_SERVICES, ...SITE_SERVICES]);
 export const RENTAL_PAGES: LandingPage[] = withPhotos(RENTAL_LIST);
 export const LOCATION_PAGES: LandingPage[] = withPhotos(TOWN_PAGES);
-export const ALL_PAGES: LandingPage[] = [...SERVICE_PAGES, ...RENTAL_PAGES, ...LOCATION_PAGES];
+// Rental pages are hidden for now (Shay, 2026-11-25): kept in content but not built or linked.
+export const ALL_PAGES: LandingPage[] = [...SERVICE_PAGES, ...LOCATION_PAGES];
 
 export const pageH1 = (p: LandingPage) => `${p.service} in ${p.area}`;
 export const pageTitle = (p: LandingPage) => `${pageH1(p)} | Rock The Hock`;

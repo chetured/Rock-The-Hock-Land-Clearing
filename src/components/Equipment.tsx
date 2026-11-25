@@ -1,55 +1,87 @@
-import { Truck } from 'lucide-react';
-import { EQUIPMENT, PHOTO_BASE } from '@/lib/constants';
+import { Check, Truck } from 'lucide-react';
+import {
+  EQUIPMENT,
+  EQUIPMENT_HAULING,
+  EQUIPMENT_MAIN,
+  PHOTO_BASE,
+  type EquipmentItem,
+} from '@/lib/constants';
 
-type EquipmentImage = { src: string; contain?: boolean };
-
-const EQUIPMENT_IMAGES: Record<string, EquipmentImage> = {
-  'Cat 289D3 compact track loader': { src: 'cat-289d3.jpg' },
-  'Raytree RMDM72SS 72-inch drum mulcher': { src: 'rental-drum-mulcher.webp', contain: true },
-  'Top Cat HDRC 72-inch brush cutter': { src: 'rental-brush-cutter.jpg' },
-  'International 4700 dump truck': { src: 'dump-truck-2.webp' },
-  'Raytree RMA42 auger, Raytree RMSC78 78-inch power rake, GIYI GY-D680 post driver and pallet forks': { src: 'rental-power-rake.jpg' },
-};
+function EquipmentCard({ item }: { item: EquipmentItem }) {
+  return (
+    <article className="overflow-hidden rounded-xl border border-white/10 bg-forest-light/40">
+      {item.image ? (
+        <div className={`aspect-[4/3] w-full ${item.contain ? 'bg-white' : ''}`}>
+          <img
+            src={`${PHOTO_BASE}${item.image}`}
+            alt={`${item.label}, owned and run by Rock The Hock`}
+            loading="lazy"
+            className={`h-full w-full ${item.contain ? 'object-contain p-4' : 'object-cover'}`}
+          />
+        </div>
+      ) : (
+        <div className="flex aspect-[4/3] w-full items-center justify-center bg-forest-light/60">
+          <Truck className="h-16 w-16 text-orange" />
+        </div>
+      )}
+      <div className="p-6 pt-4">
+        <h3 className="text-lg normal-case">{item.label}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-white/75">{item.blurb}</p>
+      </div>
+    </article>
+  );
+}
 
 export default function Equipment() {
   return (
     <section id="equipment" className="section-pad bg-forest text-white">
       <div className="container-tight">
         <div className="text-center">
-          <span className="eyebrow text-orange-light">Built for southeast Ohio terrain</span>
+          <span className="eyebrow text-orange-light">What we bring to your job</span>
           <h2 className="text-3xl sm:text-4xl">Our equipment</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80">
+            We own every machine we run. No rented equipment, no rental markup and no waiting on someone else&rsquo;s
+            schedule. It shows up on our own truck and trailer, ready to work.
+          </p>
         </div>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {EQUIPMENT.map((e) => {
-            const img = EQUIPMENT_IMAGES[e.label];
-            return (
-              <article
-                key={e.label}
-                className="overflow-hidden rounded-xl border border-white/10 bg-forest-light/40"
-              >
-                {img ? (
-                  <div className={`aspect-[4/3] w-full ${img.contain ? 'bg-white' : ''}`}>
-                    <img
-                      src={`${PHOTO_BASE}${img.src}`}
-                      alt={e.label}
-                      loading="lazy"
-                      className={`h-full w-full ${img.contain ? 'object-contain' : 'object-cover'}`}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex aspect-[4/3] w-full items-center justify-center bg-forest-light/60">
-                    <Truck className="h-16 w-16 text-orange" />
-                  </div>
-                )}
-                <div className="p-6 pt-4">
-                  <h3 className="text-lg normal-case">{e.label}</h3>
-                  <p className="mt-2 text-sm text-white/75">{e.blurb}</p>
-                </div>
-              </article>
-            );
-          })}
+
+        <article className="mt-12 grid overflow-hidden rounded-2xl border border-white/10 bg-forest-light/40 lg:grid-cols-2">
+          <img
+            src={`${PHOTO_BASE}${EQUIPMENT_MAIN.image}`}
+            alt="Rock The Hock's Cat 289D3 compact track loader"
+            loading="lazy"
+            className="aspect-[4/3] h-full w-full object-cover"
+          />
+          <div className="flex flex-col justify-center p-6 sm:p-10">
+            <span className="eyebrow text-orange-light">The main machine</span>
+            <h3 className="text-2xl sm:text-3xl">{EQUIPMENT_MAIN.label}</h3>
+            <p className="mt-4 leading-relaxed text-white/80">{EQUIPMENT_MAIN.blurb}</p>
+            <ul className="mt-6 space-y-3">
+              {EQUIPMENT_MAIN.specs.map((s) => (
+                <li key={s} className="flex items-start gap-3 text-white/90">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-orange" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </article>
+
+        <h3 className="mt-16 text-center text-2xl sm:text-3xl">Attachments</h3>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {EQUIPMENT.map((e) => (
+            <EquipmentCard key={e.label} item={e} />
+          ))}
         </div>
-        <div className="mt-10 text-center">
+
+        <h3 className="mt-16 text-center text-2xl sm:text-3xl">Trucks &amp; trailer</h3>
+        <div className="mx-auto mt-8 grid max-w-4xl gap-5 sm:grid-cols-2">
+          {EQUIPMENT_HAULING.map((e) => (
+            <EquipmentCard key={e.label} item={e} />
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
           <a href="#quote" className="btn-primary">
             Get my free quote
           </a>

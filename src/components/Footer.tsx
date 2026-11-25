@@ -1,11 +1,11 @@
 import { TreePine, Phone, Mail, MapPin } from 'lucide-react';
 import { BUSINESS } from '@/lib/constants';
-import { LOCATION_PAGES, RENTAL_PAGES, SERVICE_PAGES, pageUrl } from '@/lib/pages';
+import { LOCATION_PAGES, SERVICE_PAGES, pageUrl } from '@/lib/pages';
 
 const QUICK = [
   { label: 'Home', href: '/' },
   { label: 'Hauling', href: '/#hauling' },
-  { label: 'Rent equipment', href: '/#rentals' },
+  { label: 'Our equipment', href: '/#equipment' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Get a free quote', href: '#quote' },
 ];
@@ -15,7 +15,7 @@ export default function Footer() {
   return (
     <footer className="bg-charcoal px-4 pb-20 pt-14 text-white/80 sm:px-6 md:pb-10 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-2 text-white">
               <TreePine className="h-7 w-7 text-orange" />
@@ -32,39 +32,6 @@ export default function Footer() {
                 <li key={q.href}>
                   <a href={q.href} className="hover:text-white">
                     {q.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-wide text-white">Services</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {SERVICE_PAGES.map((p) => (
-                <li key={p.slug}>
-                  <a href={pageUrl(p)} className="hover:text-white">
-                    {p.navLabel}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <h3 className="mt-6 text-sm font-bold uppercase tracking-wide text-white">Equipment rental</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {RENTAL_PAGES.map((p) => (
-                <li key={p.slug}>
-                  <a href={pageUrl(p)} className="hover:text-white">
-                    {p.navLabel}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <h3 className="mt-6 text-sm font-bold uppercase tracking-wide text-white">Areas we serve</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {LOCATION_PAGES.map((p) => (
-                <li key={p.slug}>
-                  <a href={pageUrl(p)} className="hover:text-white">
-                    {p.navLabel}
                   </a>
                 </li>
               ))}
@@ -102,6 +69,26 @@ export default function Footer() {
               Get my free quote
             </a>
           </div>
+        </div>
+
+        <div className="mt-12 grid gap-8 border-t border-white/10 pt-8 md:grid-cols-2">
+          {[
+            { title: 'Services', pages: SERVICE_PAGES },
+            { title: 'Areas we serve', pages: LOCATION_PAGES },
+          ].map((g) => (
+            <div key={g.title}>
+              <h3 className="text-sm font-bold uppercase tracking-wide text-white">{g.title}</h3>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                {g.pages.map((p) => (
+                  <li key={p.slug}>
+                    <a href={pageUrl(p)} className="hover:text-white">
+                      {p.navLabel}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* License / insurance placeholder — uncomment and fill in when ready:

@@ -147,32 +147,63 @@ export const HAULING_MATERIALS = [
 ];
 export const HAULING_AMOUNTS = ['1 load', '2 to 3 loads', '4 or more loads', 'Not sure'];
 
-export const EQUIPMENT = [
+// Equipment RTH owns and brings to every job (shown in the "Our equipment" section).
+export type EquipmentItem = { label: string; blurb: string; image?: string; contain?: boolean };
+
+export const EQUIPMENT_MAIN = {
+  label: 'Cat 289D3 compact track loader',
+  image: 'cat-289d3.jpg',
+  blurb:
+    'The machine that does the work. High-flow hydraulics run the drum mulcher at full power, and the wide rubber tracks spread its weight so it can work soft, wet and sloped Hocking County ground without rutting your yard.',
+  specs: ['High-flow hydraulics for the mulcher', 'Rubber tracks, low ground pressure', 'Quick-attach for every tool below'],
+};
+
+export const EQUIPMENT: readonly EquipmentItem[] = [
   {
-    label: 'Cat 289D3 compact track loader',
-    blurb: 'Low ground pressure — works on soft and sloped ground.',
+    label: 'Raytree 72-inch drum mulcher',
+    image: 'rental-drum-mulcher.webp',
+    contain: true,
+    blurb: 'Grinds brush, saplings and trees up to about 6 to 8 inches into mulch right where they stand. No burn piles, no haul-off.',
   },
   {
-    label: 'Raytree RMDM72SS 72-inch drum mulcher',
-    blurb: 'Grinds brush and small trees into mulch in place. Requires 30-45 GPM high flow.',
+    label: 'Top Cat 72-inch brush cutter',
+    image: 'rental-brush-cutter.jpg',
+    blurb: 'Knocks down thick weeds, briars and overgrown fields fast, and cleans up fence lines and field edges.',
   },
   {
-    label: 'Top Cat HDRC 72-inch brush cutter',
-    blurb: 'Cuts thick brush, field edges and overgrowth.',
+    label: 'Raytree 78-inch power rake',
+    image: 'rental-power-rake.jpg',
+    blurb: 'Levels and finishes ground after clearing, preps seed beds and food plots, and dresses gravel driveways.',
   },
   {
-    label: 'Raytree RMA42 auger, Raytree RMSC78 78-inch power rake, GIYI GY-D680 post driver and pallet forks',
-    blurb: 'Four attachments for posts, grading, lifting and prep.',
+    label: 'Raytree auger',
+    image: 'rental-auger.jpg',
+    blurb: 'Digs clean post holes for fences, decks, pole barns and signs, even in rocky ground.',
   },
+  {
+    label: 'Hydraulic post driver',
+    image: 'rental-post-driver.jpg',
+    blurb: 'Drives T-posts and pointed wood line posts straight and tight, so fence lines go up fast.',
+  },
+  {
+    label: 'Pallet forks and Cat bucket',
+    image: 'rental-pallet-forks.webp',
+    contain: true,
+    blurb: 'Moves stone, logs, septic tanks and materials, and handles the dirt work on driveways and pads.',
+  },
+];
+
+export const EQUIPMENT_HAULING: readonly EquipmentItem[] = [
   {
     label: 'International 4700 dump truck',
-    blurb: 'Delivers gravel, topsoil and fill, and hauls off brush, dirt and debris.',
+    image: 'dump-truck-2.webp',
+    blurb: 'Brings in gravel, topsoil and fill, and hauls brush, dirt and debris off your property.',
   },
   {
     label: 'Ford F-350 flatbed and long tilt trailer',
-    blurb: 'Moves our track loader to your job, and hauls equipment and materials for you.',
+    blurb: 'Moves our track loader and attachments to your job, so there is no waiting on someone else\'s truck.',
   },
-] as const;
+];
 
 export const FAQ_ITEMS = [
   {
@@ -181,7 +212,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: 'How much does land clearing cost?',
-    a: 'Every property is different, so we price each job after a free look. Price depends on how steep the ground is, how thick the brush is, tree size and how far we haul the machine. Your written quote lists fuel and equipment delivery as their own lines. Send photos and the rough acreage and we\u2019ll get back to you fast.',
+    a: 'Most land clearing runs about $1,200 to $5,000 an acre. Where your job lands depends on how steep the ground is, how thick the brush is, tree size and how far we haul the machine. Your written quote lists fuel and equipment delivery as their own lines. Send photos and the rough acreage and we\u2019ll get back to you fast.',
   },
   {
     q: 'What is forestry mulching?',
@@ -204,8 +235,8 @@ export const FAQ_ITEMS = [
     a: 'Mulching takes stumps down to about ground level. Let us know if you need them fully removed for building.',
   },
   {
-    q: 'Can I rent land clearing equipment from you?',
-    a: 'Yes. We rent our Cat 289D3 track loader, a forestry mulcher package and skid steer attachments like a brush cutter, auger, power rake and post driver. See the equipment rental section for prices.',
+    q: 'What equipment do you bring to a land clearing job?',
+    a: 'We own everything we run: a high-flow Cat 289D3 compact track loader, a Raytree 72-inch drum mulcher, a Top Cat 72-inch brush cutter, a power rake, an auger, a post driver and pallet forks. We haul it on our Ford F-350 and tilt trailer, and our International 4700 dump truck brings gravel in and hauls debris out.',
   },
   {
     q: 'Do you deliver gravel and haul stuff away?',
