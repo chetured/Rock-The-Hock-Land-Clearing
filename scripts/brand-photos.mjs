@@ -26,7 +26,7 @@ export const JOBS = [
     // Also replace the plain copy fetch-photos.mjs made for the job photo pages.
     alsoAs: '../cat-289d3-compact-track-loader-logan-ohio.jpg',
     // Paint out the factory CAT logo first, then letter over it.
-    erase: [{ poly: [[458, 533], [538, 533], [538, 570], [458, 570]], tolerance: 55 }],
+    erase: [{ poly: [[455, 531], [545, 531], [545, 578], [455, 578]], tolerance: 55 }],
     decals: [{ art: 'lettering-dark.png', quad: [[437, 530], [555, 530], [555, 574], [437, 574]], paint: 200 }],
   },
   {
