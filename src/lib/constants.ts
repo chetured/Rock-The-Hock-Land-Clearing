@@ -113,25 +113,25 @@ export const HAULING_RATES = [
   {
     id: 'delivery',
     title: 'Gravel and dirt delivery',
-    price: 'From $175 a load',
+    price: 'From $275 a load',
     detail: 'Trucking within 15 miles of Logan, plus the material. Farther out is priced by distance.',
   },
   {
     id: 'hourly',
     title: 'Dump truck by the hour',
-    price: '$100 an hour',
+    price: '$200 an hour',
     detail: 'Truck and driver, 2-hour minimum, counted from when we leave the yard.',
   },
   {
     id: 'haul-off',
     title: 'Debris haul-off',
-    price: 'From $350 a load',
+    price: 'From $450 a load',
     detail: 'Loaded with our track loader and hauled away. Dump and landfill fees at cost.',
   },
   {
     id: 'equipment',
     title: 'Equipment hauling',
-    price: 'From $150 each way',
+    price: 'From $250 each way',
     detail: 'Tilt trailer moves within 25 miles of Logan. $4 a loaded mile beyond that.',
   },
 ] as const;
