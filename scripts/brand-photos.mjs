@@ -3,11 +3,13 @@
 // panel's perspective) and shaded by the light falling on that panel, then the
 // branded photo is written to dist/photos/equipment/. Runs after `vite build`.
 // On Netlify a failed download fails the build; locally it only warns.
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
 
 const PHOTO_BASE = 'https://afwiyqhgtptuzsxwoysn.supabase.co/storage/v1/object/public/quote-photos/site/';
 const DECALS = new URL('./decals/', import.meta.url);
+// Photos kept in the repo (not in the Supabase bucket) use `local` instead of `source`.
+const LOCAL = new URL('./source-photos/', import.meta.url);
 const OUT = new URL('../dist/photos/equipment/', import.meta.url);
 
 // Corners are photo pixels, clockwise from the decal's top-left.
@@ -19,6 +21,12 @@ export const JOBS = [
     source: 'dump-truck-1.webp',
     out: 'international-4700-dump-truck.jpg',
     decals: [{ art: 'door-4700.png', quad: [[440, 123], [528, 119], [528, 173], [440, 171]], paint: 240 }],
+  },
+  {
+    local: 'ford-f350-flatbed.jpg',
+    out: 'ford-f350-flatbed.jpg',
+    // Driver's door, below the mirror and clear of the handle.
+    decals: [{ art: 'door-4700.png', quad: [[750, 512], [886, 506], [886, 588], [750, 598]], paint: 240 }],
   },
   {
     source: 'cat-289d3.jpg',
@@ -363,14 +371,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   let failed = 0;
   for (const job of JOBS) {
     try {
-      const res = await fetch(PHOTO_BASE + job.source);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const branded = await brand(Buffer.from(await res.arrayBuffer()), job);
+      let buffer;
+      if (job.local) buffer = await readFile(new URL(job.local, LOCAL));
+      else {
+        const res = await fetch(PHOTO_BASE + job.source);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        buffer = Buffer.from(await res.arrayBuffer());
+      }
+      const branded = await brand(buffer, job);
       await writeFile(new URL(job.out, OUT), branded);
       if (job.alsoAs) await writeFile(new URL(job.alsoAs, OUT), branded);
     } catch (e) {
       failed++;
-      console.warn(`brand-photos: ${job.source} failed: ${e.message}`);
+      console.warn(`brand-photos: ${job.local ?? job.source} failed: ${e.message}`);
     }
   }
   console.log(`brand-photos: ${JOBS.length - failed}/${JOBS.length} equipment photos branded`);
