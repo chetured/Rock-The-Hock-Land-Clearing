@@ -26,14 +26,14 @@ export const JOBS = [
     // Also replace the plain copy fetch-photos.mjs made for the job photo pages.
     alsoAs: '../cat-289d3-compact-track-loader-logan-ohio.jpg',
     // Paint out the factory CAT logo first, then letter over it.
-    erase: [{ poly: [[458, 533], [538, 533], [538, 570], [458, 570]], foreign: 'notYellow' }],
+    erase: [{ poly: [[458, 533], [538, 533], [538, 570], [458, 570]], tolerance: 55 }],
     decals: [{ art: 'lettering-dark.png', quad: [[437, 530], [555, 530], [555, 574], [437, 574]], paint: 200 }],
   },
   {
     source: 'rental-brush-cutter.jpg',
     out: 'brush-cutter.jpg',
     // Paint out the yellow factory warning text on the side panel first.
-    erase: [{ poly: [[316, 324], [390, 219], [432, 247], [358, 353]], foreign: 'notRed' }],
+    erase: [{ poly: [[316, 324], [390, 219], [432, 247], [358, 353]], tolerance: 60 }],
     decals: [{ art: 'lettering-light.png', quad: [[326, 322], [392, 229], [422, 249], [356, 343]], paint: 90 }],
   },
   {
@@ -245,14 +245,6 @@ function fitQuad(q, aspect) {
   return [at(0.5 - f / 2, 0), at(0.5 + f / 2, 0), at(0.5 + f / 2, 1), at(0.5 - f / 2, 1)];
 }
 
-// Which pixels inside an erase area aren't the panel's paint.
-const FOREIGN = {
-  // Yellow paint: strong red and green, little blue. White, red or black marks aren't.
-  notYellow: (r, g, b) => b > 90 || r - g > 70 || 0.2126 * r + 0.7152 * g < 80,
-  // Red paint: green stays low. Yellow or white lettering isn't.
-  notRed: (r, g) => g > 85,
-};
-
 function insidePoly(poly, x, y) {
   let inside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -265,9 +257,8 @@ function insidePoly(poly, x, y) {
 
 // Paint out factory logos and lettering: fill the marked pixels from the
 // surrounding paint (repeated neighbour averaging), then add a little grain back.
-export function erase(photo, { poly, foreign }) {
+export function erase(photo, { poly, tolerance = 55 }) {
   const { data: P, width: W, height: H } = photo;
-  const test = FOREIGN[foreign];
   const xs = poly.map((p) => p[0]);
   const ys = poly.map((p) => p[1]);
   const x0 = Math.max(1, Math.floor(Math.min(...xs)));
@@ -275,6 +266,19 @@ export function erase(photo, { poly, foreign }) {
   const y0 = Math.max(1, Math.floor(Math.min(...ys)));
   const y1 = Math.min(H - 2, Math.ceil(Math.max(...ys)));
   const bw = x1 - x0 + 1;
+  // The panel's paint: median colour of the inner edge band of the area. A pixel
+  // further than `tolerance` from it is part of an old mark.
+  const band = [[], [], []];
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      if (insidePoly(poly, x - 3.5, y + 0.5) && insidePoly(poly, x + 4.5, y + 0.5) &&
+          insidePoly(poly, x + 0.5, y - 3.5) && insidePoly(poly, x + 0.5, y + 4.5)) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) band[c].push(P[i + c]);
+    }
+  const paint = band.map((v) => v.sort((a, b) => a - b)[Math.floor(v.length / 2)] ?? 128);
+  const test = (r, g, b) => Math.hypot(r - paint[0], g - paint[1], b - paint[2]) > tolerance;
   const raw = new Uint8Array(bw * (y1 - y0 + 1));
   for (let y = y0; y <= y1; y++)
     for (let x = x0; x <= x1; x++) {
@@ -308,9 +312,9 @@ export function erase(photo, { poly, foreign }) {
     for (let x = x0; x <= x1; x++) {
       if (!mask[(y - y0) * bw + (x - x0)]) continue;
       const i = (y * W + x) * 4;
-      for (let c = 0; c < 3; c++) P[i + c] = avg[c] / Math.max(cnt, 1);
+      for (let c = 0; c < 3; c++) P[i + c] = cnt ? avg[c] / cnt : paint[c];
     }
-  for (let pass = 0; pass < 120; pass++)
+  for (let pass = 0; pass < 300; pass++)
     for (let y = y0; y <= y1; y++)
       for (let x = x0; x <= x1; x++) {
         if (!mask[(y - y0) * bw + (x - x0)]) continue;
