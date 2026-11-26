@@ -25,11 +25,15 @@ export const JOBS = [
     out: 'cat-289d3-compact-track-loader.jpg',
     // Also replace the plain copy fetch-photos.mjs made for the job photo pages.
     alsoAs: '../cat-289d3-compact-track-loader-logan-ohio.jpg',
+    // Paint out the factory CAT logo first, then letter over it.
+    erase: [{ poly: [[458, 533], [538, 533], [538, 570], [458, 570]], foreign: 'notYellow' }],
     decals: [{ art: 'lettering-dark.png', quad: [[437, 530], [555, 530], [555, 574], [437, 574]], paint: 200 }],
   },
   {
     source: 'rental-brush-cutter.jpg',
     out: 'brush-cutter.jpg',
+    // Paint out the yellow factory warning text on the side panel first.
+    erase: [{ poly: [[316, 324], [390, 219], [432, 247], [358, 353]], foreign: 'notRed' }],
     decals: [{ art: 'lettering-light.png', quad: [[326, 322], [392, 229], [422, 249], [356, 343]], paint: 90 }],
   },
   {
@@ -241,6 +245,88 @@ function fitQuad(q, aspect) {
   return [at(0.5 - f / 2, 0), at(0.5 + f / 2, 0), at(0.5 + f / 2, 1), at(0.5 - f / 2, 1)];
 }
 
+// Which pixels inside an erase area aren't the panel's paint.
+const FOREIGN = {
+  // Yellow paint: strong red and green, little blue. White, red or black marks aren't.
+  notYellow: (r, g, b) => b > 90 || r - g > 70 || 0.2126 * r + 0.7152 * g < 80,
+  // Red paint: green stays low. Yellow or white lettering isn't.
+  notRed: (r, g) => g > 85,
+};
+
+function insidePoly(poly, x, y) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+// Paint out factory logos and lettering: fill the marked pixels from the
+// surrounding paint (repeated neighbour averaging), then add a little grain back.
+export function erase(photo, { poly, foreign }) {
+  const { data: P, width: W, height: H } = photo;
+  const test = FOREIGN[foreign];
+  const xs = poly.map((p) => p[0]);
+  const ys = poly.map((p) => p[1]);
+  const x0 = Math.max(1, Math.floor(Math.min(...xs)));
+  const x1 = Math.min(W - 2, Math.ceil(Math.max(...xs)));
+  const y0 = Math.max(1, Math.floor(Math.min(...ys)));
+  const y1 = Math.min(H - 2, Math.ceil(Math.max(...ys)));
+  const bw = x1 - x0 + 1;
+  const raw = new Uint8Array(bw * (y1 - y0 + 1));
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      const i = (y * W + x) * 4;
+      if (insidePoly(poly, x + 0.5, y + 0.5) && test(P[i], P[i + 1], P[i + 2])) raw[(y - y0) * bw + (x - x0)] = 1;
+    }
+  // Grow the mask by 2px to catch the soft edges of the old marks.
+  const mask = new Uint8Array(raw.length);
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      let hit = 0;
+      for (let dy = -2; dy <= 2 && !hit; dy++)
+        for (let dx = -2; dx <= 2 && !hit; dx++) {
+          const xx = x - x0 + dx, yy = y - y0 + dy;
+          if (xx >= 0 && yy >= 0 && xx < bw && yy <= y1 - y0) hit = raw[yy * bw + xx];
+        }
+      mask[(y - y0) * bw + (x - x0)] = hit;
+    }
+  // Start the marked pixels at the average clean paint so the fill converges.
+  const avg = [0, 0, 0];
+  let cnt = 0;
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (mask[(y - y0) * bw + (x - x0)] || !insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) avg[c] += P[i + c];
+      cnt++;
+    }
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!mask[(y - y0) * bw + (x - x0)]) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) P[i + c] = avg[c] / Math.max(cnt, 1);
+    }
+  for (let pass = 0; pass < 120; pass++)
+    for (let y = y0; y <= y1; y++)
+      for (let x = x0; x <= x1; x++) {
+        if (!mask[(y - y0) * bw + (x - x0)]) continue;
+        const i = (y * W + x) * 4;
+        for (let c = 0; c < 3; c++)
+          P[i + c] = (P[i - 4 + c] + P[i + 4 + c] + P[i - W * 4 + c] + P[i + W * 4 + c]) / 4;
+      }
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!mask[(y - y0) * bw + (x - x0)]) continue;
+      const i = (y * W + x) * 4;
+      const n = (Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1; // fixed grain, same every build
+      for (let c = 0; c < 3; c++) P[i + c] = Math.min(255, Math.max(0, P[i + c] + n * 6));
+    }
+}
+
 async function loadArt(file, quad) {
   // Pre-shrink the art to about twice the spot's size so it doesn't alias.
   const w = Math.max(...quad.map((p) => p[0])) - Math.min(...quad.map((p) => p[0]));
@@ -257,6 +343,7 @@ async function loadArt(file, quad) {
 export async function brand(buffer, job) {
   const { data, info } = await sharp(buffer).flatten({ background: '#ffffff' }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const photo = { data, width: info.width, height: info.height };
+  for (const e of job.erase ?? []) erase(photo, e);
   for (const d of job.decals) {
     const art = await loadArt(d.art, d.quad);
     applyDecal(photo, art, fitQuad(d.quad, art.width / art.height), d);
