@@ -11,24 +11,30 @@ const DECALS = new URL('./decals/', import.meta.url);
 const OUT = new URL('../dist/photos/equipment/', import.meta.url);
 
 // Corners are photo pixels, clockwise from the decal's top-left.
-// exposure: brightness of the decal's whites relative to a sunlit panel.
+// paint: luminance (0-255) of that panel's clean paint in full light; the decal is
+// darkened by how far the photo's panel falls short of it. exposure: a fixed gain
+// instead, for dark plates where the paint can't tell us the light.
 export const JOBS = [
   {
     source: 'dump-truck-1.webp',
     out: 'international-4700-dump-truck.jpg',
-    decals: [{ art: 'door-4700.png', quad: [[440, 123], [528, 119], [528, 173], [440, 171]], exposure: 'surface' }],
+    decals: [{ art: 'door-4700.png', quad: [[440, 123], [528, 119], [528, 173], [440, 171]], paint: 240 }],
   },
   {
     source: 'cat-289d3.jpg',
     out: 'cat-289d3-compact-track-loader.jpg',
     // Also replace the plain copy fetch-photos.mjs made for the job photo pages.
     alsoAs: '../cat-289d3-compact-track-loader-logan-ohio.jpg',
-    decals: [{ art: 'skid-steer-22x7.png', quad: [[437, 533], [555, 533], [555, 571], [437, 571]], exposure: 'surface' }],
+    // Paint out the factory CAT logo first, then letter over it.
+    erase: [{ poly: [[455, 531], [545, 531], [545, 578], [455, 578]], tolerance: 55 }],
+    decals: [{ art: 'lettering-dark.png', quad: [[437, 530], [555, 530], [555, 574], [437, 574]], paint: 200 }],
   },
   {
     source: 'rental-brush-cutter.jpg',
     out: 'brush-cutter.jpg',
-    decals: [{ art: 'skid-steer-22x7.png', quad: [[326, 322], [392, 229], [422, 249], [356, 343]], exposure: 'surface' }],
+    // Paint out the yellow factory warning text on the side panel first.
+    erase: [{ poly: [[316, 324], [390, 219], [432, 247], [358, 353]], tolerance: 60 }],
+    decals: [{ art: 'lettering-light.png', quad: [[326, 322], [392, 229], [422, 249], [356, 343]], paint: 90 }],
   },
   {
     source: 'rental-drum-mulcher.webp',
@@ -48,12 +54,12 @@ export const JOBS = [
   {
     source: 'rental-post-driver.jpg',
     out: 'post-driver.jpg',
-    decals: [{ art: 'crest.png', quad: [[228, 284], [258, 268], [270, 300], [240, 315]], exposure: 'surface' }],
+    decals: [{ art: 'crest.png', quad: [[228, 284], [258, 268], [270, 300], [240, 315]], paint: 200 }],
   },
   {
     source: 'rental-pallet-forks.webp',
     out: 'pallet-forks.jpg',
-    decals: [{ art: 'skid-steer-22x7.png', quad: [[270, 191], [330, 189], [330, 206], [270, 208]], exposure: 'surface' }],
+    decals: [{ art: 'lettering-dark.png', quad: [[270, 190], [330, 188], [330, 207], [270, 209]], paint: 190 }],
   },
 ];
 
@@ -111,7 +117,7 @@ const lum = (d, i) => 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
 // ---- compositing -----------------------------------------------------------
 
 // photo / art: { data: Uint8Array RGBA, width, height }
-export function applyDecal(photo, art, quad, { exposure = 'surface' } = {}) {
+export function applyDecal(photo, art, quad, { exposure, paint = 220 } = {}) {
   const { data: P, width: W, height: H } = photo;
   const { data: D, width: dw, height: dh } = art;
   const toArt = homography(quad, [[0, 0], [dw, 0], [dw, dh], [0, dh]]);
@@ -149,14 +155,32 @@ export function applyDecal(photo, art, quad, { exposure = 'surface' } = {}) {
   const meanBright = sl / Math.max(n, 1);
   const light = (x, y) => Math.min(1.12, Math.max(0.7, (pa * x + pb * y + pc) / meanBright));
 
-  // How bright the decal's whites should be. 'surface': match the panel's own
-  // brightest paint (a white door or a yellow panel tells us the exposure).
-  let gain = typeof exposure === 'number' ? exposure : 1;
-  if (exposure === 'surface') {
-    const hi = sorted[Math.floor(sorted.length * 0.85)] || 200;
-    // Assume the paint is about as bright as the decal's own background.
-    gain = Math.min(1, Math.max(0.55, hi / 235));
+  // How bright the decal should be: compare the panel's brightest clean paint
+  // with what that paint looks like in full light.
+  let gain = exposure;
+  if (gain === undefined) {
+    const hi = sorted[Math.floor(sorted.length * 0.85)] || paint;
+    gain = Math.min(1.05, Math.max(0.5, hi / paint));
   }
+
+  // Surface texture: how much each pixel differs from its neighbourhood. Vinyl
+  // follows the metal underneath, so dents, dirt and grain show through it.
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+  const L = new Float32Array(bw * bh);
+  for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) L[y * bw + x] = lum(P, ((y + y0) * W + x + x0) * 4);
+  const R = 2;
+  const detail = (x, y) => {
+    let sum = 0, cnt = 0;
+    for (let dy = -R; dy <= R; dy++)
+      for (let dx = -R; dx <= R; dx++) {
+        const xx = x - x0 + dx, yy = y - y0 + dy;
+        if (xx < 0 || yy < 0 || xx >= bw || yy >= bh) continue;
+        sum += L[yy * bw + xx]; cnt++;
+      }
+    const here = L[(y - y0) * bw + (x - x0)];
+    const ratio = (here + 8) / (sum / cnt + 8);
+    return 1 + 0.8 * (Math.min(1.25, Math.max(0.75, ratio)) - 1);
+  };
 
   // Supersample 4x4 per pixel for clean edges.
   const S = 4;
@@ -193,16 +217,118 @@ export function applyDecal(photo, art, quad, { exposure = 'surface' } = {}) {
         }
       if (a === 0) continue;
       const cov = a / (S * S);
-      const k = (gain * light(x + 0.5, y + 0.5)) / a; // un-premultiply and shade
+      const k = (gain * light(x + 0.5, y + 0.5) * detail(x, y)) / a; // un-premultiply and shade
       const i = (y * W + x) * 4;
-      // Keep a little of the panel's grain so the vinyl doesn't look pasted on.
-      const grain = (lum(P, i) - median) * 0.06;
       for (const [c, val] of [[0, r], [1, g], [2, b]]) {
-        const dec = Math.min(255, Math.max(0, val * k + grain));
+        const dec = Math.min(255, Math.max(0, val * k));
         P[i + c] = Math.round(P[i + c] * (1 - cov) + dec * cov);
       }
     }
   }
+}
+
+// Shrink the spot so the art keeps its own proportions, centred in the spot.
+function fitQuad(q, aspect) {
+  const d = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const [tl, tr, br, bl] = q;
+  const spot = (d(tl, tr) + d(bl, br)) / (d(tl, bl) + d(tr, br));
+  const at = (s, t) => {
+    const top = [tl[0] + (tr[0] - tl[0]) * s, tl[1] + (tr[1] - tl[1]) * s];
+    const bot = [bl[0] + (br[0] - bl[0]) * s, bl[1] + (br[1] - bl[1]) * s];
+    return [top[0] + (bot[0] - top[0]) * t, top[1] + (bot[1] - top[1]) * t];
+  };
+  if (aspect > spot) {
+    const f = spot / aspect;
+    return [at(0, 0.5 - f / 2), at(1, 0.5 - f / 2), at(1, 0.5 + f / 2), at(0, 0.5 + f / 2)];
+  }
+  const f = aspect / spot;
+  return [at(0.5 - f / 2, 0), at(0.5 + f / 2, 0), at(0.5 + f / 2, 1), at(0.5 - f / 2, 1)];
+}
+
+function insidePoly(poly, x, y) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+// Paint out factory logos and lettering: fill the marked pixels from the
+// surrounding paint (repeated neighbour averaging), then add a little grain back.
+export function erase(photo, { poly, tolerance = 55 }) {
+  const { data: P, width: W, height: H } = photo;
+  const xs = poly.map((p) => p[0]);
+  const ys = poly.map((p) => p[1]);
+  const x0 = Math.max(1, Math.floor(Math.min(...xs)));
+  const x1 = Math.min(W - 2, Math.ceil(Math.max(...xs)));
+  const y0 = Math.max(1, Math.floor(Math.min(...ys)));
+  const y1 = Math.min(H - 2, Math.ceil(Math.max(...ys)));
+  const bw = x1 - x0 + 1;
+  // The panel's paint: median colour of the inner edge band of the area. A pixel
+  // further than `tolerance` from it is part of an old mark.
+  const band = [[], [], []];
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      if (insidePoly(poly, x - 3.5, y + 0.5) && insidePoly(poly, x + 4.5, y + 0.5) &&
+          insidePoly(poly, x + 0.5, y - 3.5) && insidePoly(poly, x + 0.5, y + 4.5)) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) band[c].push(P[i + c]);
+    }
+  const paint = band.map((v) => v.sort((a, b) => a - b)[Math.floor(v.length / 2)] ?? 128);
+  const test = (r, g, b) => Math.hypot(r - paint[0], g - paint[1], b - paint[2]) > tolerance;
+  const raw = new Uint8Array(bw * (y1 - y0 + 1));
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      const i = (y * W + x) * 4;
+      if (insidePoly(poly, x + 0.5, y + 0.5) && test(P[i], P[i + 1], P[i + 2])) raw[(y - y0) * bw + (x - x0)] = 1;
+    }
+  // Grow the mask by 2px to catch the soft edges of the old marks.
+  const mask = new Uint8Array(raw.length);
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      let hit = 0;
+      for (let dy = -2; dy <= 2 && !hit; dy++)
+        for (let dx = -2; dx <= 2 && !hit; dx++) {
+          const xx = x - x0 + dx, yy = y - y0 + dy;
+          if (xx >= 0 && yy >= 0 && xx < bw && yy <= y1 - y0) hit = raw[yy * bw + xx];
+        }
+      mask[(y - y0) * bw + (x - x0)] = hit;
+    }
+  // Start the marked pixels at the average clean paint so the fill converges.
+  const avg = [0, 0, 0];
+  let cnt = 0;
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (mask[(y - y0) * bw + (x - x0)] || !insidePoly(poly, x + 0.5, y + 0.5)) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) avg[c] += P[i + c];
+      cnt++;
+    }
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!mask[(y - y0) * bw + (x - x0)]) continue;
+      const i = (y * W + x) * 4;
+      for (let c = 0; c < 3; c++) P[i + c] = cnt ? avg[c] / cnt : paint[c];
+    }
+  for (let pass = 0; pass < 300; pass++)
+    for (let y = y0; y <= y1; y++)
+      for (let x = x0; x <= x1; x++) {
+        if (!mask[(y - y0) * bw + (x - x0)]) continue;
+        const i = (y * W + x) * 4;
+        for (let c = 0; c < 3; c++)
+          P[i + c] = (P[i - 4 + c] + P[i + 4 + c] + P[i - W * 4 + c] + P[i + W * 4 + c]) / 4;
+      }
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!mask[(y - y0) * bw + (x - x0)]) continue;
+      const i = (y * W + x) * 4;
+      const n = (Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1; // fixed grain, same every build
+      for (let c = 0; c < 3; c++) P[i + c] = Math.min(255, Math.max(0, P[i + c] + n * 6));
+    }
 }
 
 async function loadArt(file, quad) {
@@ -221,7 +347,11 @@ async function loadArt(file, quad) {
 export async function brand(buffer, job) {
   const { data, info } = await sharp(buffer).flatten({ background: '#ffffff' }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const photo = { data, width: info.width, height: info.height };
-  for (const d of job.decals) applyDecal(photo, await loadArt(d.art, d.quad), d.quad, d);
+  for (const e of job.erase ?? []) erase(photo, e);
+  for (const d of job.decals) {
+    const art = await loadArt(d.art, d.quad);
+    applyDecal(photo, art, fitQuad(d.quad, art.width / art.height), d);
+  }
   return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } })
     .flatten({ background: '#ffffff' })
     .jpeg({ quality: 86, mozjpeg: true })
