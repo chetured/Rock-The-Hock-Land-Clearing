@@ -402,7 +402,8 @@ export default function QuoteForm({ presetService }: { presetService?: string })
         photos_and_videos_page: filesPage,
         photo_links: mediaLinks.join('\n'),
         uploads_failed: failed ? String(failed) : '',
-        _subject: `New estimate request from ${form.name} (${form.town}) - Rock The Hock`,
+        _subject: `URGENT: New estimate request from ${form.name} (${form.town}) - Rock The Hock`,
+        priority: 'URGENT - new estimate, reply within 1 business day',
       };
       if (form.email) body._replyto = form.email;
       const res = await fetch(FORM_ENDPOINT, {
@@ -416,7 +417,43 @@ export default function QuoteForm({ presetService }: { presetService?: string })
       console.error('Form send failed:', err);
     }
 
-    if (!dbSaved && !emailSent) {
+    // Server-side alerts: Notion lead row and URGENT text messages.
+    let alerted = false;
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          email: form.email,
+          preferredContact: form.preferredContact,
+          services: form.services,
+          size: form.approxSize,
+          terrainTier: terrain,
+          brushTier: brush,
+          items: form.items,
+          hauling,
+          description: form.description,
+          address: addressText,
+          town: form.town,
+          access: form.access,
+          howSoon: form.howSoon,
+          referral: form.referral,
+          mapsUrl,
+          earthUrl,
+          filesPage,
+          fileCount: media.length,
+          failedUploads: failed,
+        }),
+      });
+      const result = res.ok ? await res.json() : {};
+      alerted = result.notion === 'ok' || result.sms === 'ok' || result.sms === 'partial';
+    } catch (err) {
+      console.error('Alert send failed:', err);
+    }
+
+    if (!dbSaved && !emailSent && !alerted) {
       setError(`We couldn't send your request right now. Please call or text ${BUSINESS.phone} and we'll get you on the schedule.`);
       setStatus('error');
       return;
