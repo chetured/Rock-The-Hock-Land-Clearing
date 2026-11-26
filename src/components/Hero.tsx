@@ -46,7 +46,7 @@ export default function Hero() {
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a href="#quote" className="btn-primary w-full text-lg sm:w-auto">
-            Get my free quote
+            Get an estimate now
           </a>
           <a
             href="#equipment"

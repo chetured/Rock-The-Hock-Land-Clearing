@@ -67,7 +67,7 @@ export default function Header() {
               <span className="lg:hidden xl:inline">{BUSINESS.phone}</span>
             </a>
             <a href="#quote" className="btn-primary whitespace-nowrap !px-5 !py-2.5 !text-sm">
-              Free quote
+              Get an estimate now
             </a>
           </div>
 
@@ -109,7 +109,7 @@ export default function Header() {
                 <Phone className="h-4 w-4" /> Call
               </a>
               <a href="#quote" onClick={() => setOpen(false)} className="btn-primary flex-1">
-                Free quote
+                Get an estimate now
               </a>
             </div>
           </nav>
@@ -135,7 +135,7 @@ export default function Header() {
           href="#quote"
           className="flex flex-col items-center gap-1 bg-orange py-2.5 text-xs font-bold uppercase tracking-wide"
         >
-          <TreePine className="h-5 w-5" /> Quote
+          <TreePine className="h-5 w-5" /> Estimate
         </a>
       </div>
     </>

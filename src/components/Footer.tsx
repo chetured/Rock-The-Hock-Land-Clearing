@@ -7,7 +7,7 @@ const QUICK = [
   { label: 'Hauling', href: '/#hauling' },
   { label: 'Our equipment', href: '/#equipment' },
   { label: 'FAQ', href: '/#faq' },
-  { label: 'Get a free quote', href: '#quote' },
+  { label: 'Get an estimate now', href: '#quote' },
 ];
 
 export default function Footer() {
@@ -66,7 +66,7 @@ export default function Footer() {
             <h3 className="text-sm font-bold uppercase tracking-wide text-white">Ready to start?</h3>
             <p className="mt-3 text-sm">Free estimates. Call, text, or request a quote online.</p>
             <a href="#quote" className="btn-primary mt-4 w-full !text-sm">
-              Get my free quote
+              Get an estimate now
             </a>
           </div>
         </div>
