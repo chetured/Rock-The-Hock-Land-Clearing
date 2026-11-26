@@ -13,7 +13,7 @@ export default function FinalCTA() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a href="#quote" className="inline-flex items-center justify-center gap-2 rounded-md bg-forest px-6 py-3 text-base font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-forest-dark">
-            Get my free quote
+            Get an estimate now
           </a>
           <a
             href={`tel:${BUSINESS.phoneRaw}`}

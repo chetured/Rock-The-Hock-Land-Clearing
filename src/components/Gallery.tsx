@@ -77,7 +77,7 @@ export default function Gallery() {
         </div>
         <div className="mt-10 text-center">
           <a href="#quote" className="btn-primary">
-            Get my free quote
+            Get an estimate now
           </a>
         </div>
       </div>

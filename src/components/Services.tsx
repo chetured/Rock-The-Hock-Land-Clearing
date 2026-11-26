@@ -67,7 +67,7 @@ export default function Services() {
                   data-service={s.label}
                   className="mt-4 inline-flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-orange hover:text-orange-dark"
                 >
-                  Get a quote for this →
+                  Get an estimate for this →
                 </a>
               </article>
             );
