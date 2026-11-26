@@ -148,11 +148,12 @@ export const HAULING_MATERIALS = [
 export const HAULING_AMOUNTS = ['1 load', '2 to 3 loads', '4 or more loads', 'Not sure'];
 
 // Equipment RTH owns and brings to every job (shown in the "Our equipment" section).
+// Images are built by scripts/brand-photos.mjs, which puts our decals on them.
 export type EquipmentItem = { label: string; blurb: string; image?: string; contain?: boolean };
 
 export const EQUIPMENT_MAIN = {
   label: 'Cat 289D3 compact track loader',
-  image: 'cat-289d3.jpg',
+  image: '/photos/equipment/cat-289d3-compact-track-loader.jpg',
   blurb:
     'The machine that does the work. High-flow hydraulics run the drum mulcher at full power, and the wide rubber tracks spread its weight so it can work soft, wet and sloped Hocking County ground without rutting your yard.',
   specs: ['High-flow hydraulics for the mulcher', 'Rubber tracks, low ground pressure', 'Quick-attach for every tool below'],
@@ -161,33 +162,33 @@ export const EQUIPMENT_MAIN = {
 export const EQUIPMENT: readonly EquipmentItem[] = [
   {
     label: 'Raytree 72-inch drum mulcher',
-    image: 'rental-drum-mulcher.webp',
+    image: '/photos/equipment/drum-mulcher.jpg',
     contain: true,
     blurb: 'Grinds brush, saplings and trees up to about 6 to 8 inches into mulch right where they stand. No burn piles, no haul-off.',
   },
   {
     label: 'Top Cat 72-inch brush cutter',
-    image: 'rental-brush-cutter.jpg',
+    image: '/photos/equipment/brush-cutter.jpg',
     blurb: 'Knocks down thick weeds, briars and overgrown fields fast, and cleans up fence lines and field edges.',
   },
   {
     label: 'Raytree 78-inch power rake',
-    image: 'rental-power-rake.jpg',
+    image: '/photos/equipment/power-rake.jpg',
     blurb: 'Levels and finishes ground after clearing, preps seed beds and food plots, and dresses gravel driveways.',
   },
   {
     label: 'Raytree auger',
-    image: 'rental-auger.jpg',
+    image: '/photos/equipment/auger.jpg',
     blurb: 'Digs clean post holes for fences, decks, pole barns and signs, even in rocky ground.',
   },
   {
     label: 'Hydraulic post driver',
-    image: 'rental-post-driver.jpg',
+    image: '/photos/equipment/post-driver.jpg',
     blurb: 'Drives T-posts and pointed wood line posts straight and tight, so fence lines go up fast.',
   },
   {
     label: 'Pallet forks and Cat bucket',
-    image: 'rental-pallet-forks.webp',
+    image: '/photos/equipment/pallet-forks.jpg',
     contain: true,
     blurb: 'Moves stone, logs, septic tanks and materials, and handles the dirt work on driveways and pads.',
   },
@@ -196,7 +197,7 @@ export const EQUIPMENT: readonly EquipmentItem[] = [
 export const EQUIPMENT_HAULING: readonly EquipmentItem[] = [
   {
     label: 'International 4700 dump truck',
-    image: 'dump-truck-2.webp',
+    image: '/photos/equipment/international-4700-dump-truck.jpg',
     blurb: 'Brings in gravel, topsoil and fill, and hauls brush, dirt and debris off your property.',
   },
   {
