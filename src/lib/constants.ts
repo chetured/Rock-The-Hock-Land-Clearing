@@ -202,6 +202,7 @@ export const EQUIPMENT_HAULING: readonly EquipmentItem[] = [
   },
   {
     label: 'Ford F-350 flatbed and long tilt trailer',
+    image: '/photos/equipment/ford-f350-flatbed.jpg',
     blurb: 'Moves our track loader and attachments to your job, so there is no waiting on someone else\'s truck.',
   },
 ];
