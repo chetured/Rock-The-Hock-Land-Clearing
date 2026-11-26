@@ -3,7 +3,6 @@ import {
   EQUIPMENT,
   EQUIPMENT_HAULING,
   EQUIPMENT_MAIN,
-  PHOTO_BASE,
   type EquipmentItem,
 } from '@/lib/constants';
 
@@ -13,7 +12,7 @@ function EquipmentCard({ item }: { item: EquipmentItem }) {
       {item.image ? (
         <div className={`aspect-[4/3] w-full ${item.contain ? 'bg-white' : ''}`}>
           <img
-            src={`${PHOTO_BASE}${item.image}`}
+            src={item.image}
             alt={`${item.label}, owned and run by Rock The Hock`}
             loading="lazy"
             className={`h-full w-full ${item.contain ? 'object-contain p-4' : 'object-cover'}`}
@@ -47,7 +46,7 @@ export default function Equipment() {
 
         <article className="mt-12 grid overflow-hidden rounded-2xl border border-white/10 bg-forest-light/40 lg:grid-cols-2">
           <img
-            src={`${PHOTO_BASE}${EQUIPMENT_MAIN.image}`}
+            src={EQUIPMENT_MAIN.image}
             alt="Rock The Hock's Cat 289D3 compact track loader"
             loading="lazy"
             className="aspect-[4/3] h-full w-full object-cover"

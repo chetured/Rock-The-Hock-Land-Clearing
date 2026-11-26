@@ -1,10 +1,11 @@
 import { Truck, Check } from 'lucide-react';
-import { HAULING_RATES, PHOTO_BASE } from '@/lib/constants';
+import { HAULING_RATES } from '@/lib/constants';
 
-const TRUCK_PHOTOS = [
-  { src: 'dump-truck-1.webp', alt: 'Our International 4700 dump truck, front three-quarter view' },
-  { src: 'dump-truck-3.webp', alt: 'Side view of our dump truck and its steel dump bed' },
-];
+// Built by scripts/brand-photos.mjs with our door decal on the truck.
+const TRUCK_PHOTO = {
+  src: '/photos/equipment/international-4700-dump-truck.jpg',
+  alt: 'Our International 4700 dump truck with the Rock The Hock door decal',
+};
 
 const WHAT_WE_HAUL = [
   'Driveway gravel, #57, #304 and crusher run',
@@ -42,17 +43,14 @@ export default function Hauling() {
           ))}
         </div>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2">
-          {TRUCK_PHOTOS.map((p) => (
-            <img
-              key={p.src}
-              src={`${PHOTO_BASE}${p.src}`}
-              alt={p.alt}
-              loading="lazy"
-              className="aspect-[4/3] w-full rounded-xl object-cover shadow-sm"
-            />
-          ))}
-        </div>
+        <img
+          src={TRUCK_PHOTO.src}
+          alt={TRUCK_PHOTO.alt}
+          loading="lazy"
+          width={1000}
+          height={428}
+          className="mt-10 aspect-[4/3] w-full rounded-xl object-cover shadow-sm sm:aspect-[21/9]"
+        />
 
         <div className="mt-10 grid gap-8 rounded-2xl border-2 border-forest/10 p-6 sm:p-8 lg:grid-cols-[1.4fr_1fr]">
           <div>
