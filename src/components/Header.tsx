@@ -9,7 +9,6 @@ const NAV = [
   { label: 'Equipment', href: '/#equipment' },
   { label: 'How it works', href: '/#how-it-works' },
   { label: 'Service area', href: '/#service-area' },
-  { label: 'FAQ', href: '/#faq' },
 ];
 
 function fireCall() {
@@ -34,8 +33,8 @@ export default function Header() {
           scrolled ? 'bg-forest text-white shadow-md' : 'bg-forest/95 text-white'
         }`}
       >
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <a href="/" className="flex items-center gap-2 text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
+          <a href="/" className="flex shrink-0 items-center gap-2 text-white">
             <TreePine className="h-7 w-7 text-orange" strokeWidth={2.2} />
             <span className="font-heading text-lg font-bold uppercase leading-none tracking-tight sm:text-xl">
               Rock The Hock
@@ -45,28 +44,29 @@ export default function Header() {
             </span>
           </a>
 
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav aria-label="Main" className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-9">
             {NAV.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="text-sm font-semibold uppercase tracking-wide text-white/85 transition-colors hover:text-white"
+                className="relative whitespace-nowrap py-1 text-sm font-semibold uppercase tracking-wide text-white/85 transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-orange after:transition-transform hover:text-white hover:after:scale-x-100"
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden shrink-0 items-center gap-3 md:flex">
             <a
               href={`tel:${BUSINESS.phoneRaw}`}
               onClick={fireCall}
-              className="inline-flex items-center gap-2 rounded-md border-2 border-white/40 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:border-white hover:bg-white/10"
+              aria-label={`Call ${BUSINESS.phone}`}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border-2 border-white/40 px-3 py-2 text-sm font-bold tracking-wide text-white transition-colors hover:border-white hover:bg-white/10 xl:px-4"
             >
               <Phone className="h-4 w-4" />
-              {BUSINESS.phone}
+              <span className="lg:hidden xl:inline">{BUSINESS.phone}</span>
             </a>
-            <a href="#quote" className="btn-primary !px-5 !py-2.5 !text-sm">
+            <a href="#quote" className="btn-primary whitespace-nowrap !px-5 !py-2.5 !text-sm">
               Free quote
             </a>
           </div>
